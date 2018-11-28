@@ -1,21 +1,24 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 import TopBarNav from 'top-bar-nav';
-import Schedule from './schedule/Schedule';
+import Schedule2 from './schedule/Schedule2';
+import ListEvent from './ListEvent';
 import Filter from './Filter';
 import Share from './Share';
 import Merch from './Merch';
 
+import AgendaScreen from './schedule/Agenda'
+import CreateEvent from './CreateEvent';
+
 const Scene = ({ index }) => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 20 }}>{index}</Text>
+      <Text style={{ fontSize: 17 }}>{index}</Text>
   </View>
 );
 
 const ROUTES = {
   Scene,
-  Schedule,
-  Filter,
+  Schedule2,
   Share,
   Merch
   // ideally you would have a ROUTES object with multiple React component scenes
@@ -23,13 +26,17 @@ const ROUTES = {
 
 // There are three types of labels (image, text, and element)
 const ROUTESTACK = [
-  { text: 'schedule', title: 'Schedule' },
-  { text: 'filter', title: 'Filter' },
+  { text: 'drops', title: 'Schedule2' },
   { text: 'share', title: 'Share' },
   { text: 'merch', title: 'Merch' }
 ];
 
 export default class MainApp extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -67,7 +74,6 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     fontSize: 15,
-    fontWeight: '500',
     color: 'white'
 },
   underlineStyle: {

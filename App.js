@@ -1,11 +1,13 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, AppLoading} from 'react-native';
 
 import HomePage from './components/HomePage';
 import { Pages } from 'react-native-pages';
 
 import * as firebase from 'firebase';
 import MainApp from './components/MainApp';
+import { Font } from 'expo';
+
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -21,39 +23,32 @@ export default class App extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      fontLoaded: false,
+    };
 
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
   }
 
-  render() {
-    return (
-      <Pages>
-        <HomePage />
-          <MainApp/>
-      </Pages>
-    );
+  async componentDidMount() {
+    await Font.loadAsync({
+      'navigation': require('./assets/fonts/YRThree_Light.ttf'),
+      'descriptions': require('./assets/fonts/YRThree_Medium.ttf'),
+      'Roboto': require('native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+    });
+
+    this.setState({ fontLoaded: true });
   }
-}
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#15000f',
-//   },
-//   headerStyle: {
-//       borderBottomWidth: 1,
-//       borderColor: '#15000f',
-//       backgroundColor: '#15000f'
-//   },
-//   textStyle: {
-//     fontSize: 15,
-//     fontWeight: '500',
-//     color: 'white'
-// },
-//   underlineStyle: {
-//       height: 3.6,
-//       backgroundColor: '#ffc300',
-//       width: 50
-//   }
-// });
+
+  render() {
+      return (
+          <Pages>
+            <HomePage />
+            <MainApp/>      
+          </Pages>
+      );
+    }
+  }
