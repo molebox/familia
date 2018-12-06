@@ -22,8 +22,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#15000f',
       },
       dayText: {
-        fontSize: 21,
+        fontSize: 20,
         fontWeight: '300',
-        color: 'white'
+        color: '#faf9f9'
       }
 })

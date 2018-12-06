@@ -10,7 +10,7 @@ import {
 export default function Month(props) {
   return (
     <View>
-       <View style={styles.container}>
+      <View style={styles.container}>
         <Text style={styles.month}>{props.month}</Text>
       </View>
       <Divider style={styles.divider}/>
@@ -26,13 +26,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#15000f',
       },
       month: {
-        fontSize: 21,
-        fontWeight: '300',
-        color: 'white',
+        fontSize: 19,
+        fontWeight: '500',
+        color: '#faf9f9',
         marginBottom: 5
       },
       divider: {
         height: 1,
-        backgroundColor: 'white',
+        opacity: 0.5,
+        backgroundColor: '#fbf7f7',
       }
 })

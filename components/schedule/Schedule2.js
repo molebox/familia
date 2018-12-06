@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList, Sec} from 'react-native';
 
 import TickerBar from '../Tickerbar';
 
@@ -71,6 +71,8 @@ const styles = StyleSheet.create({
   
 
 export default Schedule2;
+
+
 
 const dummyData = [
     {

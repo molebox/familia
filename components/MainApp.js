@@ -6,6 +6,7 @@ import ListEvent from './ListEvent';
 import Filter from './Filter';
 import Share from './Share';
 import Merch from './Merch';
+import SectionListTest from './schedule/SectionListTest';
 
 import AgendaScreen from './schedule/Agenda'
 import CreateEvent from './CreateEvent';
@@ -18,7 +19,7 @@ const Scene = ({ index }) => (
 
 const ROUTES = {
   Scene,
-  Schedule2,
+  SectionListTest,
   Share,
   Merch
   // ideally you would have a ROUTES object with multiple React component scenes
@@ -26,7 +27,7 @@ const ROUTES = {
 
 // There are three types of labels (image, text, and element)
 const ROUTESTACK = [
-  { text: 'drops', title: 'Schedule2' },
+  { text: 'drops', title: 'SectionListTest' },
   { text: 'share', title: 'Share' },
   { text: 'merch', title: 'Merch' }
 ];
