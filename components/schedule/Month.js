@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
         fontSize: 19,
         fontWeight: '500',
         color: '#faf9f9',
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: 'YRThree_Medium'
       },
       divider: {
         height: 1,

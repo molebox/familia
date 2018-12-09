@@ -1,15 +1,10 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 import TopBarNav from 'top-bar-nav';
-import Schedule2 from './schedule/Schedule2';
-import ListEvent from './ListEvent';
-import Filter from './Filter';
 import Share from './Share';
 import Merch from './Merch';
 import SectionListTest from './schedule/SectionListTest';
 
-import AgendaScreen from './schedule/Agenda'
-import CreateEvent from './CreateEvent';
 
 const Scene = ({ index }) => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

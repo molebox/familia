@@ -1,8 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, FlatList, Sec} from 'react-native';
 
-import TickerBar from '../Tickerbar';
-
 import { Container, Header, Content, List, ListItem, Text } from 'native-base';
 import DaySection from './DaySection.js';
 

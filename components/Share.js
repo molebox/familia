@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
-import TickerBar from './Tickerbar';
 
 class Share extends React.Component {
     constructor(props) {
@@ -11,7 +10,6 @@ class Share extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-             <TickerBar/>
                 <View style={styles.main}>
                 <Text style={styles.textStyle}>SHARE INFO HERE</Text>  
                 </View>

@@ -1,8 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
-import TickerBar from './Tickerbar';
-
 class Merch extends React.Component {
     constructor(props) {
         super(props);
@@ -11,7 +9,6 @@ class Merch extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-             <TickerBar/>
                 <View style={styles.main}>
                 <Text style={styles.textStyle}>SELL SOME SHIT HERE!</Text>  
                 </View>

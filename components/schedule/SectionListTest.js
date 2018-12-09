@@ -1,8 +1,9 @@
 import React from 'react';
-import {View, StyleSheet, SectionList} from 'react-native';
-import { Container, Content ,Text } from 'native-base';
+import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
+import { Container, Content , Text} from 'native-base';
+import Collapsible from 'react-native-collapsible';
 
-
+import CustomIcon from '../utilities/CustomIcon';
 
 import Month from './Month';
 import moment from 'moment';
@@ -16,24 +17,50 @@ let getCurrentMonth = today.month('MMM');
 // Display each date there is an event
 class SectionListItem extends React.Component {
 
+    state = {
+        collapsed: true,
+    };
+
+    toggleExpanded = () => {
+        this.setState({ collapsed: !this.state.collapsed });
+    };
+
     render() {
     let fullDay = moment(this.props.item.date);
     fullDay.day();
     const day = fullDay.format('DD')
         return (
             <View style={styles.sectionListItemContainer}>
-            <View style={styles.eventInfoContainer}>
-                <View>
-                    <Day day={day}/>
+                <View style={styles.eventInfoContainer}>
+                    <View>
+                        <Day day={day}/>
+                    </View>
+                    <View style={styles.info}>
+                    <TouchableOpacity onPress={this.toggleExpanded}>
+                        <Text style={styles.eventName}>{this.props.item.eventName}</Text>
+                        <Text style={styles.creatorsName}>{this.props.item.creatorsName}</Text>
+                        <Text style={styles.location}>{this.props.item.location}</Text>
+                        <Collapsible collapsed={this.state.collapsed}>
+                            <EventDescription description={this.props.item.description}/>
+                        </Collapsible>;
+                    </TouchableOpacity>
+                    </View>
                 </View>
-           <View style={styles.info}>
-                <Text style={styles.eventName}>{this.props.item.eventName}</Text>
-                <Text style={styles.creatorsName}>{this.props.item.creatorsName}</Text>
-                <Text style={styles.location}>{this.props.item.location}</Text>
-                {/* <Text style={styles.textStyle}>{this.props.item.description}</Text> */}
-           </View>
-           
             </View>
+        )
+    }
+}
+
+class EventDescription extends React.Component {
+    render() {
+        return (
+            <View style={styles.descriptionDropdown}>
+                <Text style={styles.description}>{this.props.description}</Text>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                </View>
             </View>
         )
     }
@@ -100,6 +127,16 @@ const styles = StyleSheet.create({
         margin: 20,
         marginTop: 70
     },
+    description: {
+        fontSize: 14,
+        fontWeight: '300',
+        color: 'white'
+    },
+    descriptionDropdown: {
+        flex: 1,
+        alignItems: 'center',
+        marginTop: 15
+    },
     monthHeader: {
         marginBottom: 15
     },
@@ -113,6 +150,9 @@ const styles = StyleSheet.create({
     },
     info: {
         marginLeft: 40
+    },
+    iconStyle: {
+        color: '#faf9f9'
     }
 
 });
