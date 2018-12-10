@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 import TopBarNav from 'top-bar-nav';
+
 import Share from './Share';
 import Merch from './Merch';
-import SectionListTest from './schedule/SectionListTest';
+import EventList from './schedule/EventList';
+import EventForm from './listEvent/EventForm';
 
 
 const Scene = ({ index }) => (
@@ -14,7 +16,8 @@ const Scene = ({ index }) => (
 
 const ROUTES = {
   Scene,
-  SectionListTest,
+  EventList,
+  EventForm,
   Share,
   Merch
   // ideally you would have a ROUTES object with multiple React component scenes
@@ -22,9 +25,10 @@ const ROUTES = {
 
 // There are three types of labels (image, text, and element)
 const ROUTESTACK = [
-  { text: 'drops', title: 'SectionListTest' },
+  { text: 'events', title: 'EventList' },
+  { text: 'list', title: 'EventForm' },
+  { text: 'merch', title: 'Merch' },
   { text: 'share', title: 'Share' },
-  { text: 'merch', title: 'Merch' }
 ];
 
 export default class MainApp extends Component {

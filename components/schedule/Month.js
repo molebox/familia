@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#15000f',
       },
       month: {
-        fontSize: 19,
-        fontWeight: '500',
+        fontSize: 17,
+        fontWeight: '300',
         color: '#faf9f9',
         marginBottom: 5,
         fontFamily: 'YRThree_Medium'

@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import t from 'tcomb-form-native';
 import * as  _ from 'lodash';
+import Button from './utilities/Button';
 
 const Form = t.form.Form;
 
@@ -87,16 +88,13 @@ class ListEvent extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-            <Text style={styles.heading}>LIST YOUR EVENT</Text>
                 <Form
                 ref="form"
                 type={eventListing}
                 onChange={this.onChange}
                 options={options}
                 />
-                    <TouchableHighlight style={styles.button} onPress={this.onPress} underlayColor='#99d9f4'>
-                    <Text style={styles.buttonText}>SUBMIT</Text>
-                    </TouchableHighlight>
+                 <Button text='SUBMIT'/>
             </View>
            
         );
@@ -105,12 +103,11 @@ class ListEvent extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      paddingLeft: 10,
-      paddingRight: 10,
-      backgroundColor: '#15000f',
-      alignSelf: 'stretch',
-      
+        flex: 1,
+        paddingLeft: 10,
+        paddingRight: 10,
+        backgroundColor: '#15000f',
+        alignSelf: 'stretch',
     },
     textStyle: {
         fontSize: 15,
@@ -122,28 +119,15 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#15000f',
         alignSelf: 'center'
-      },
-      button: {
-        height: 40,
-        width: 200,
-        backgroundColor: '#ffc300',
-        borderColor: '#ffc300',
-        borderWidth: 1,
-        borderRadius: 20,
-        marginBottom: 10,
-        alignSelf: 'stretch',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center'
-      },
-      heading: {
+    },
+    heading: {
         fontSize: 20,
         fontWeight: '500',
         color: 'white',
         alignSelf: 'center',
         padding: 20
-      }
-  });
-  
+    }
+});
+
 
 export default ListEvent;

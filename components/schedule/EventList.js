@@ -18,11 +18,11 @@ let getCurrentMonth = today.month('MMM');
 class SectionListItem extends React.Component {
 
     state = {
-        collapsed: true,
+        descriptionCollapsed: true
     };
 
-    toggleExpanded = () => {
-        this.setState({ collapsed: !this.state.collapsed });
+    toggleDescription = () => {
+        this.setState({ descriptionCollapsed: !this.state.descriptionCollapsed });
     };
 
     render() {
@@ -35,17 +35,17 @@ class SectionListItem extends React.Component {
                     <View>
                         <Day day={day}/>
                     </View>
-                    <View style={styles.info}>
-                    <TouchableOpacity onPress={this.toggleExpanded}>
-                        <Text style={styles.eventName}>{this.props.item.eventName}</Text>
-                        <Text style={styles.creatorsName}>{this.props.item.creatorsName}</Text>
-                        <Text style={styles.location}>{this.props.item.location}</Text>
-                        <Collapsible collapsed={this.state.collapsed}>
-                            <EventDescription description={this.props.item.description}/>
-                        </Collapsible>;
-                    </TouchableOpacity>
-                    </View>
+                        <TouchableOpacity onPress={this.toggleDescription}>
+                        <View style={styles.info}>
+                            <Text style={styles.eventName}>{this.props.item.eventName}</Text>
+                            <Text style={styles.creatorsName}>{this.props.item.creatorsName}</Text>
+                            <Text style={styles.location}>{this.props.item.location}</Text>
+                        </View>
+                        </TouchableOpacity>
                 </View>
+                <Collapsible collapsed={this.state.descriptionCollapsed}>
+                    <EventDescription description={this.props.item.description}/>
+                </Collapsible>;
             </View>
         )
     }
@@ -55,8 +55,13 @@ class EventDescription extends React.Component {
     render() {
         return (
             <View style={styles.descriptionDropdown}>
-                <Text style={styles.description}>{this.props.description}</Text>
-                <View style={{flex: 1, flexDirection: 'row'}}>
+                <View style={styles.upArrow}>
+                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                </View>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.description}>{this.props.description}</Text>
+                </View>
+                <View style={styles.iconContainer}>
                     <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
                     <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
                     <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
@@ -77,11 +82,25 @@ class SectionHeader extends React.Component {
     }
 }
 
-export default class SectionListTest extends React.Component {
+export default class EventList extends React.Component {
+
+    state = {
+        filterCollapsed: true
+    };
+
+    toggleFilter = () => {
+        this.setState({ filterCollapsed: !this.state.filterCollapsed });
+    };
 
     render() {
       return (
         <Container style={styles.container}>
+            <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
+                <Text style={styles.filterText}>FILTER</Text>
+            </TouchableOpacity>
+            <Collapsible collapsed={this.state.filterCollapsed}>
+                <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+            </Collapsible>;
             <Content contentContainerStyle={styles.list}>
             <SectionList
             renderItem={({item, index}) => {
@@ -94,9 +113,9 @@ export default class SectionListTest extends React.Component {
             keyExtractor={(item) => item.id}
             >
             </SectionList>
-          </Content>
-        </Container>   
-      );
+        </Content>
+    </Container>   
+    );
     }
 }
 
@@ -106,18 +125,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#15000f', 
     },
     eventName: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: '300',
         color: '#81e6fc',
         // fontFamily: 'descriptions',
     },
     creatorsName: {
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: '300',
         color: '#faf9f9'
     },
     location: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '300',
         color: '#898688'
     },
@@ -125,16 +144,20 @@ const styles = StyleSheet.create({
         width: '80%',
         height: '70%',
         margin: 20,
-        marginTop: 70
+        marginTop: 50
+    },
+    descriptionContainer: {
+        flex: 1,
+        flexWrap: 'wrap',
+        alignContent: 'center',
+        marginLeft: 35
     },
     description: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '300',
-        color: 'white'
+        color: 'white',
     },
     descriptionDropdown: {
-        flex: 1,
-        alignItems: 'center',
         marginTop: 15
     },
     monthHeader: {
@@ -149,10 +172,29 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     info: {
-        marginLeft: 40
+        marginLeft: 35
+    },
+    iconContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignSelf: 'center',
     },
     iconStyle: {
-        color: '#faf9f9'
+        color: '#faf9f9',
+    },
+    upArrow: {
+        alignSelf: 'center',
+    },
+    filterTextContainer: {
+        marginTop: 30,
+        alignSelf: 'center',
+        justifyContent: 'center'
+    },
+    filterText: {
+        color: '#ffc400',
+        fontSize: 19,
+        fontWeight: '300',
+        fontFamily: 'YRThree_Medium'
     }
 
 });
