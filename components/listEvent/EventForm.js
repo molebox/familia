@@ -4,6 +4,7 @@ import { DatePicker, Picker, Form, TextInput } from 'react-native-form-idable';
 import Collapsible from 'react-native-collapsible';
 import Button from '../utilities/Button';
 import moment from 'moment';
+import CustomIcon from '../utilities/CustomIcon';
 
 const styles = StyleSheet.create({
     container: {
@@ -19,6 +20,36 @@ const styles = StyleSheet.create({
     submitButton: {
         marginTop: 50,
         alignItems: 'center'
+    },
+    descriptionContainer: {
+        backgroundColor: '#15000f', 
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#81e6fc',
+    },
+    descriptionText: {
+        fontSize: 17,
+        fontWeight: '300',
+        fontFamily: 'YRThree_Light',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        color: '#81e6fc',
+    },
+    textAreaContainer: {
+        marginTop: 20,
+        borderColor: '#81e6fc',
+        borderRadius: 20,
+        borderWidth: 0.5,
+        padding: 5,
+        height: 250,
+    },
+    textArea: {
+        // height: 450,
+        // justifyContent: "flex-start",
+        color: 'white',
+        fontSize: 17,
+        fontWeight: '300',
+        fontFamily: 'YRThree_Light',
+        
     }
 });
 
@@ -31,7 +62,8 @@ const formStyles = {
     fieldText: {
         color: 'white',
         fontSize: 17,
-        fontWeight: '500',
+        fontWeight: '300',
+        fontFamily: 'YRThree_Light',
         paddingHorizontal: 20,
         paddingVertical: 12,
     },
@@ -44,11 +76,8 @@ const formStyles = {
     inputLabel: {
         // color: '#81e6fc',
     },
-    activeInputLabel: {
-        // color: '#81e6fc',
-    },
     placeholderAndSelectionColors: '#81e6fc',
-    activePlaceholderAndSelectionColors: '#2a78f7'
+    activePlaceholderAndSelectionColors: '#6be0f9'
 
 };
 
@@ -77,9 +106,11 @@ render() {
         style={styles.form}
         onValidationError={errors => console.log(errors)}
         >
-        <Picker name="discipline" type="language" placeholder="Language" formStyles={formStyles}>
-            <Picker.Item label="English" value="en" />
-            <Picker.Item label="French" value="fr" />
+        <Picker name="discipline" type="icon" placeholder="DISCIPLINE" formStyles={formStyles}>
+            <Picker.Item label="Skydiving" value="skydiving" />
+            <Picker.Item label="Base Jumping" value="base" />
+            <Picker.Item label="Wingsuit" value="wingsuit" />
+            <Picker.Item label="Coaching" value="coaching" />
         </Picker>
         <TextInput name="eventTitle" placeholder="EVENT TITLE" type="text" required />
         <DatePicker
@@ -91,8 +122,31 @@ render() {
             maximumDate={new Date(2030, 1, 1)}
         />
         <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
-        <TextInput name="description" placeholder="DESCRIPTION" type="text" required />
+        {/* <TextInput name="description" placeholder="DESCRIPTION" type="text" required /> */}
         <TextInput name="location" placeholder="LOCATION" type="text" required />
+
+        <View>
+        <TouchableOpacity onPress={this.toggleDescription}>
+        <View style={styles.descriptionContainer}>
+            <Text style={styles.descriptionText}>DESCRIPTION (in 100 words)</Text>
+        </View>
+        </TouchableOpacity>
+            <Collapsible collapsed={this.state.descriptionCollapsed}>
+            <View style={styles.textAreaContainer} >
+                <TextInput
+                required={true}
+                name="description"
+                type="text"
+                style={styles.textArea}
+                placeholder="Describe the event..."
+                placeholderTextColor="#81e6fc"
+                numberOfLines={20}
+                multiline={true}
+                />
+            </View>
+            </Collapsible>;
+        </View>
+
         <View style={styles.submitButton}>
             <Button type='submit' text='LIST EVENT'/>
         </View>

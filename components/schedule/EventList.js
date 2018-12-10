@@ -210,15 +210,15 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-01-02",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
-             {
+            {
             id: 2,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-01-05",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
              {
             id: 3,
@@ -226,7 +226,7 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-01-07",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             }
         ],
         title: 'THIS MONTH'
@@ -239,7 +239,7 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-02-10",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
                     {
             id: 5,
@@ -247,7 +247,7 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-02-13",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
                     {
             id: 6,
@@ -255,7 +255,7 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-02-22",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             }
         ],
         title: 'FEB'
@@ -268,14 +268,14 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-03-02",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
             {
             id: 8,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
             {
             id: 9,
@@ -283,7 +283,7 @@ const listData = [
             location: "Brento, Switzerland",
             creatorsName: "Coached by Adrian Daszkowski",
             date: "2018-03-02",
-            description: 'Esse velit eiusmod dolore consequat cupidatat reprehenderit amet laboris. Labore quis dolore ex excepteur voluptate aliqua ea commodo. Minim proident labore consequat nulla ullamco sint. Adipisicing reprehenderit cupidatat mollit Lorem esse aliqua amet occaecat amet in. Qui incididunt qui cupidatat aliquip nisi do amet dolor qui eiusmod.'
+            description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             }
         ],
         title: 'MAR'
