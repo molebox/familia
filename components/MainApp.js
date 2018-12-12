@@ -27,7 +27,7 @@ const ROUTES = {
 const ROUTESTACK = [
   { text: 'events', title: 'EventList' },
   { text: 'list', title: 'EventForm' },
-  { text: 'merch', title: 'Merch' },
+  { text: 'store', title: 'Merch' },
   { text: 'share', title: 'Share' },
 ];
 

@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DatePicker, Picker, Form, TextInput } from 'react-native-form-idable';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Collapsible from 'react-native-collapsible';
 import Button from '../utilities/Button';
 import moment from 'moment';
 import CustomIcon from '../utilities/CustomIcon';
+
+const MAX_COUNT = 100;
 
 const styles = StyleSheet.create({
     container: {
@@ -39,17 +42,26 @@ const styles = StyleSheet.create({
         borderColor: '#81e6fc',
         borderRadius: 20,
         borderWidth: 0.5,
-        padding: 5,
-        height: 250,
+        height: 300,
+        padding: 15,
+        backgroundColor: '#15000f', 
     },
     textArea: {
-        // height: 450,
-        // justifyContent: "flex-start",
-        color: 'white',
+        color: '#81e6fc',  
         fontSize: 17,
         fontWeight: '300',
-        fontFamily: 'YRThree_Light',
-        
+        // fontFamily: 'YRThree_Light',  
+    },
+    counterContainer: {
+        flex: 1
+    },
+    counter: {
+        alignSelf: 'center',
+        flex: 2,
+        justifyContent: 'flex-end',
+        color: '#81e6fc',
+        marginTop: 100,
+        zIndex: 1
     }
 });
 
@@ -61,7 +73,7 @@ const formStyles = {
     },
     fieldText: {
         color: 'white',
-        fontSize: 17,
+        fontSize: 15,
         fontWeight: '300',
         fontFamily: 'YRThree_Light',
         paddingHorizontal: 20,
@@ -73,8 +85,8 @@ const formStyles = {
     inputLabelContainer: {
 
     },
-    inputLabel: {
-        // color: '#81e6fc',
+    activeFieldText: {
+        color: '#81e6fc',
     },
     placeholderAndSelectionColors: '#81e6fc',
     activePlaceholderAndSelectionColors: '#6be0f9'
@@ -87,7 +99,8 @@ let now = today.format("YYYY-MM-DD");
 export default class EventForm extends React.Component {
 
     state = {
-        descriptionCollapsed: true
+        descriptionCollapsed: true,
+        descriptionCount: ''
     };
 
     toggleDescription = () => {
@@ -96,9 +109,23 @@ export default class EventForm extends React.Component {
 
     onSubmit = formData => console.log(formData);
 
+    getCount = () => {
+        const count = this.state.descriptionCount.split(" ").length;
+
+        if (count === MAX_COUNT) {
+            return count;
+        }
+    }
+
 render() {
+
     return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+    style={{ backgroundColor: '#15000f' }}
+    contentContainerStyle={styles.container} 
+    resetScrollToCoords={{ x: 0, y: 0 }}
+    scrollEnabled={true}
+    >
         <Form
         formStyles={formStyles}
         onSubmit={this.onSubmit}
@@ -123,35 +150,40 @@ render() {
         />
         <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
         {/* <TextInput name="description" placeholder="DESCRIPTION" type="text" required /> */}
+        <View>
+            <TouchableOpacity onPress={this.toggleDescription}>
+            <View style={styles.descriptionContainer}>
+                <Text style={styles.descriptionText}>DESCRIPTION</Text>
+            </View>
+            </TouchableOpacity>
+                <Collapsible collapsed={this.state.descriptionCollapsed}>
+                <View style={styles.textAreaContainer}>
+                    <TextInput
+                    required
+                    name="description"
+                    type="text"
+                    formStyles={formStyles}
+                    placeholder=" describe the event.."
+                    placeholderTextColor="#81e6fc"
+                    numberOfLines={200}
+                    multiline={true}
+                    maxLength={700}
+                    onChangeText={(value) => this.setState({descriptionCount: value})}
+                    />
+                    <View style={styles.counterContainer}>
+                        <Text style={styles.counter}>{this.state.descriptionCount.split(" ").length}/100</Text>
+                    </View>
+                </View>
+                </Collapsible>;
+        </View>
         <TextInput name="location" placeholder="LOCATION" type="text" required />
 
-        <View>
-        <TouchableOpacity onPress={this.toggleDescription}>
-        <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionText}>DESCRIPTION (in 100 words)</Text>
-        </View>
-        </TouchableOpacity>
-            <Collapsible collapsed={this.state.descriptionCollapsed}>
-            <View style={styles.textAreaContainer} >
-                <TextInput
-                required={true}
-                name="description"
-                type="text"
-                style={styles.textArea}
-                placeholder="Describe the event..."
-                placeholderTextColor="#81e6fc"
-                numberOfLines={20}
-                multiline={true}
-                />
-            </View>
-            </Collapsible>;
-        </View>
 
         <View style={styles.submitButton}>
             <Button type='submit' text='LIST EVENT'/>
         </View>
         </Form>
-    </View>
+    </KeyboardAwareScrollView>
     );
 }
 }

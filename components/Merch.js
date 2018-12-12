@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Linking, TouchableOpacity, Image} from 'react-native';
 
 class Merch extends React.Component {
     constructor(props) {
@@ -9,8 +9,13 @@ class Merch extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.main}>
-                <Text style={styles.textStyle}>SELL SOME SHIT HERE!</Text>  
+                <View >
+                {/* <Text style={styles.textStyle}>SELL SOME SHIT HERE!</Text>   */}
+                <TouchableOpacity onPress={ ()=> Linking.openURL('https://google.com') }>
+                <Image style={styles.image} source={require('../assets/StoreLink.png')} resizeMode={'contain'}>
+                </Image>
+                </TouchableOpacity>
+
                 </View>
             </View>
         );
@@ -19,21 +24,21 @@ class Merch extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#15000f',
-      alignSelf: 'stretch',
+        flex: 1,
+        backgroundColor: '#15000f',
+        // alignSelf: 'stretch',
     },
-    main: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    image: {
+        flex: 1,
+        width: 200,
+        height: 200
     },
     textStyle: {
         fontSize: 15,
         fontWeight: '500',
         color: 'white'
     },
-  });
-  
+});
+
 
 export default Merch;
