@@ -1,22 +1,27 @@
 import React from 'react';
-import {View, StyleSheet, Text, Linking, TouchableOpacity, Image} from 'react-native';
+import {View, StyleSheet, Linking, TouchableOpacity, Image} from 'react-native';
+import { Container, Content, Card, CardItem, Text} from 'native-base';
 
 class Merch extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {  };
-    }
+
     render() {
         return (
             <View style={styles.container}>
-                <View >
-                {/* <Text style={styles.textStyle}>SELL SOME SHIT HERE!</Text>   */}
-                <TouchableOpacity onPress={ ()=> Linking.openURL('https://google.com') }>
-                <Image style={styles.image} source={require('../assets/StoreLink.png')} resizeMode={'contain'}>
-                </Image>
-                </TouchableOpacity>
-
-                </View>
+            <Container style={styles.contentContainer}>
+                <Content>
+                    <View style={{marginBottom: 5}}>
+                        <Text style={styles.textStyle}>FAMILIA STORE</Text>
+                    </View>
+                    <Card borderRadius={20}>
+                        <CardItem cardBody>
+                        <TouchableOpacity onPress={() => Linking.openURL('https://google.com')}>
+                            <Image style={{height: 450, width: 340}} source={require('../assets/StoreLink.png')}>
+                            </Image>
+                        </TouchableOpacity>
+                        </CardItem>
+                    </Card>
+                </Content>
+            </Container>
             </View>
         );
     }
@@ -26,17 +31,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#15000f',
-        // alignSelf: 'stretch',
     },
     image: {
-        flex: 1,
-        width: 200,
-        height: 200
+        width: 340,
+        height: 450
+    },
+    contentContainer: {
+        marginTop: 100,
+        backgroundColor: '#15000f',
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    cardStyle: {
+        height: 450, 
+        width: 340,
     },
     textStyle: {
-        fontSize: 15,
-        fontWeight: '500',
-        color: 'white'
+        fontSize: 17,
+        fontWeight: '900',
+        color: 'white',
+        fontFamily: 'YRThree_Light'
     },
 });
 
