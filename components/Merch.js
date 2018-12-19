@@ -12,8 +12,8 @@ class Merch extends React.Component {
                     <View style={{marginBottom: 5}}>
                         <Text style={styles.textStyle}>FAMILIA STORE</Text>
                     </View>
-                    <Card borderRadius={20}>
-                        <CardItem cardBody>
+                    <Card style={{ borderRadius: 20}}>
+                        <CardItem bordered style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 20}}>
                         <TouchableOpacity onPress={() => Linking.openURL('https://google.com')}>
                             <Image style={{height: 450, width: 340}} source={require('../assets/StoreLink.png')}>
                             </Image>

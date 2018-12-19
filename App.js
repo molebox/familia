@@ -8,17 +8,18 @@ import * as firebase from 'firebase';
 import MainApp from './components/MainApp';
 import { Font } from 'expo';
 import LoginPage from './components/login/LoginPage';
+import Places from './components/test/Places';
 
 
 // Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBSlPQ7HJ7pzlOPE1YVMJEkeEkfyhxWtq0",
-    authDomain: "test1-acf0d.firebaseapp.com",
-    databaseURL: "https://test1-acf0d.firebaseio.com",
-    projectId: "test1-acf0d",
-    storageBucket: "",
-    messagingSenderId: "822411268971"
-};
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBSlPQ7HJ7pzlOPE1YVMJEkeEkfyhxWtq0",
+//     authDomain: "test1-acf0d.firebaseapp.com",
+//     databaseURL: "https://test1-acf0d.firebaseio.com",
+//     projectId: "test1-acf0d",
+//     storageBucket: "",
+//     messagingSenderId: "822411268971"
+// };
 
 export default class App extends React.Component {
 
@@ -48,13 +49,14 @@ export default class App extends React.Component {
   render() {
 
     if (this.state.fontLoaded) {
-      return (
-        <Pages>
-        {/* <HomePage /> */}
-        <LoginPage/>
-        <MainApp/>      
-      </Pages>
-      )
+      return <LoginPage/>
+      // return (
+      //   <Pages>
+      //   {/* <HomePage /> */}
+      //   {/* <LoginPage/> */}
+      //   <MainApp/>      
+      // </Pages>
+      // )
     } else {
       return <ActivityIndicator size="large" color="#0000ff" />
     }
