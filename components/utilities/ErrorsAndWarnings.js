@@ -1,29 +1,15 @@
 import React from 'react';
-import {StyleSheet} from 'react-native'
-import {Text, View} from 'native-base';
+import {StyleSheet, Text} from 'react-native'
 
-export default class ErrorsAndWarnings extends React.Component {
+export default function ErrorsAndWarnings(props) {
 
-    constructor(props) {
-        super(props);
-    }
+    const styles = StyleSheet.create({
+        textStyle: {
+            fontSize: 16,
+            color: '#C70039',
+            fontFamily: 'YRThree_Light'
+        },
+    });
 
-    render () {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.textStyle}>{this.props.error}</Text>
-            </View>
-        )
-    }
+    return <Text style={styles.textStyle}>{props.error}</Text>
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    textStyle: {
-        fontSize: 14,
-        color: '#C70039',
-        fontFamily: 'YRThree_Light'
-    },
-});

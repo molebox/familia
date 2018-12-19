@@ -1,10 +1,10 @@
 import React from 'react';
-import {View, StyleSheet, ImageBackground, Text, TextInput, Dimensions} from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Label } from 'native-base';
+import {View, StyleSheet, ImageBackground} from 'react-native';
+import {Form, Item, Input, Label} from 'native-base';
 
 import Button from '../../components/utilities/Button';
 import { Pages } from 'react-native-pages';
-import Dialog, { DialogContent, SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
+import Dialog, { DialogContent, SlideAnimation, DialogTitle, ScaleAnimation, FadeAnimation } from 'react-native-popup-dialog';
 
 import MainApp from '../MainApp';
 import { f, auth, database} from '../../config/config';
@@ -17,44 +17,29 @@ class LoginPage extends React.Component {
         this.state = {
             loggedIn: false,
             signUpVisible: false,
+            loginVisible: false,
             email: '',
             password: '',
             hasError: false,
             error: ''
         }
-        // this.registerUser('testemail@gmauil.com', 'password');
-
-        // let that = this;
-        //     // Check if user exists
-        //     f.auth().onAuthStateChanged((user) => {
-        //         if(user) {
-        //         // Logged in
-        //         that.setState({
-        //             loggedIn: true
-        //         });
-        //         console.log('logged in...', user);
-        //         } else {
-        //         // Logged out
-        //         that.setState({
-        //             loggedIn: false
-        //         });
-        //         console.log('Logged out...');
-        //         }
-        //     });
-        }
+    }
 
 // Register user with email and log user in
 registerUser = (email, password) => {
     console.log(email, password);
     auth.createUserWithEmailAndPassword(email, password)
     .then((user) => console.log(email, password, user))
-    .catch((error) => this.setState({error, hasError: true}));
+    .catch((error) => {
+        this.setState({error: error.message, hasError: true});
+        console.log(error.message);
+    });
 };
 
-    handleSignUp = () => {
-        console.log('signedup!');
+    // handleSignUp = () => {
+    //     console.log('signedup!');
 
-    }
+    // }
 
     loginUser = async(email, password) => {
         if (email != '' && password != '') {
@@ -62,11 +47,13 @@ registerUser = (email, password) => {
             let user = await auth.signInWithEmailAndPassword(email, password);
             console.log(user);
         } catch(error) {
-            this.setState({error, hasError: true});
+            this.setState({error: error.message, hasError: true});
+            console.log(error.message);
         }
     } else {
         // if empty
-        alert('Missing email or password');
+        this.setState({error: 'Missing email or password', hasError: true});
+        // alert('Missing email or password');
     }
 }
 
@@ -79,7 +66,7 @@ registerUser = (email, password) => {
     if (type === 'success') {
         const credentials = f.auth.FacebookAuthProvider.credential(token);
         f.auth().signInAndRetrieveDataWithCredential(credentials).catch((error) => {
-            this.setState({error, hasError: true});
+            this.setState({error: error.message, hasError: true});
         })
     }
 }
@@ -99,7 +86,7 @@ registerUser = (email, password) => {
         .then(() => {
             console.log('Logged out...');
         }).catch((error) => {
-            this.setState({error, hasError: true});
+            this.setState({error: error.message, hasError: true});
         });
     }
 
@@ -125,12 +112,12 @@ registerUser = (email, password) => {
                                     <Dialog
                                     containerStyle={styles.signUpForm}
                                     visible={this.state.signUpVisible}
-                                    opacity={0.5}
+                                    opacity={0.2}
                                     width={0.9}
-                                    overlayBackgroundColor='#000000'
+                                    overlayBackgroundColor='transparent'
                                     dialogAnimation={new SlideAnimation({
                                         slideFrom: 'bottom',
-                                    })}
+                                        })}
                                     dialogTitle={<DialogTitle style={{backgroundColor: '#15000f'}} textStyle={styles.signUpTitle} title="REGISTER"/>}
                                     onTouchOutside={() => {
                                     this.setState({signUpVisible: false });
@@ -146,7 +133,6 @@ registerUser = (email, password) => {
                                                 onChangeText={(text) => this.setState({email: text})}
                                                 value={this.state.email}
                                                 />
-                                                {this.state.hasError ? <ErrorsAndWarnings error={this.state.error}/> : null}
                                             </Item>
                                             <Item floatingLabel>
                                                 <Label style={styles.text}>Password</Label>
@@ -156,9 +142,9 @@ registerUser = (email, password) => {
                                                 secureTextEntry={true}
                                                 value={this.state.pass}
                                                 />
-                                                {this.state.hasError ? <ErrorsAndWarnings error={this.state.error}/> : null}
                                             </Item>
                                             <View style={styles.signUpBtn}>
+                                            {this.state.hasError ? <View style={styles.error}><ErrorsAndWarnings error={this.state.error}/></View> : null}
                                                 <Button
                                                 onPress={() => this.registerUser(this.state.email, this.state.password)}
                                                 text="CREATE ACCOUNT"
@@ -186,8 +172,53 @@ registerUser = (email, password) => {
                                 <Button 
                                 isLoginButton={true}
                                 text="LOGIN"
-                                onPress={this.loginWithGoogle}
+                                onPress={() => this.setState({loginVisible: true})}
                                 />
+                                <Dialog
+                                    containerStyle={styles.signUpForm}
+                                    visible={this.state.loginVisible}
+                                    opacity={0.2}
+                                    width={0.9}
+                                    overlayBackgroundColor='#15000f'
+                                    dialogAnimation={new SlideAnimation({
+                                        slideFrom: 'bottom',
+                                        })}
+                                    dialogTitle={<DialogTitle style={{backgroundColor: '#15000f'}} textStyle={styles.signUpTitle} title="LOGIN"/>}
+                                    onTouchOutside={() => {
+                                    this.setState({loginVisible: false });
+                                    }}
+                                    >
+                                    <DialogContent style={styles.signUpContent}>
+                                        <View>
+                                        <Form>
+                                            <Item floatingLabel>
+                                                <Label style={styles.text}>Email</Label>
+                                                <Input
+                                                style={styles.text}
+                                                onChangeText={(text) => this.setState({email: text})}
+                                                value={this.state.email}
+                                                />
+                                            </Item>
+                                            <Item floatingLabel>
+                                                <Label style={styles.text}>Password</Label>
+                                                <Input
+                                                style={styles.text}
+                                                onChangeText={(text) => this.setState({password: text})}
+                                                secureTextEntry={true}
+                                                value={this.state.pass}
+                                                />
+                                            </Item>
+                                            <View style={styles.signUpBtn}>
+                                            {this.state.hasError ? <View style={styles.error}><ErrorsAndWarnings error={this.state.error}/></View> : null}
+                                                <Button
+                                                onPress={() => this.loginUser(this.state.email, this.state.password)}
+                                                text="LOGIN"
+                                                />
+                                            </View>                                     
+                                        </Form>
+                                        </View>
+                                    </DialogContent>
+                                </Dialog>
                             </View>
                         </View>
                     </View>
@@ -231,6 +262,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#15000f',
         zIndex: 10, 
         elevation: 10,
+        borderColor: '#15000f',
+        borderWidth: 1,
     },
     signUpBtn: {
         marginTop: 35,
@@ -242,11 +275,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: 'YRThree_Medium',
         fontSize: 20,
+        borderColor: '#15000f',
+        borderWidth: 1,
     },
     signUpContent: {
         backgroundColor: '#15000f',
-        // borderColor: '#81e6fc',
-        // borderWidth: 1,
+        borderColor: '#15000f',
+        borderWidth: 1,
+    },
+    error: {
+        marginTop: 5,
+        marginBottom: 10,
     }
 });
 

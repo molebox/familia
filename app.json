@@ -1,11 +1,14 @@
 {
   "expo": {
-    "name": "skydiving-app",
-    "description": "This project is really great.",
-    "slug": "skydiving-app",
+    "name": "familia-skydiving-app",
+    "description": "WIP: Familia sky/base jumping app....",
+    "slug": "familia-skydiving-app",
     "privacy": "public",
     "sdkVersion": "30.0.0",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +24,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hungrybearstudio.familiaSkydivingApp"
+    },
+    "android": {
+      "package": "com.hungrybearstudio.familiaSkydivingApp"
     }
   }
 }
