@@ -18,9 +18,7 @@ export default class CreateEvent extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
-    
-            </View>
+            <View style={styles.container}><Text>PLACEHOLDER</Text></View>
         );
     }
 }

@@ -6,7 +6,7 @@ class Button extends Component {
     const {isLoginButton} = this.props;
         return (
             <View>
-                {isLoginButton ? (
+                {!!isLoginButton ? (
                 <TouchableOpacity style={styles.loginButton} onPress={this.props.onPress}>
                     <Text style={styles.text}>{this.props.text}</Text>
                 </TouchableOpacity >

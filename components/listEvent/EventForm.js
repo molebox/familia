@@ -1,13 +1,125 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {Textarea} from 'native-base';
 import { DatePicker, Picker, Form, TextInput } from 'react-native-form-idable';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Collapsible from 'react-native-collapsible';
 import Button from '../utilities/Button';
 import moment from 'moment';
-import CustomIcon from '../utilities/CustomIcon';
+
+import ColourBars from '../colourBars/ColourBars';
+import Modal from "react-native-modal";
 
 const MAX_COUNT = 100;
+
+let today = moment();
+let now = today.format("YYYY-MM-DD");
+
+export default class EventForm extends React.Component {
+
+    state = {
+        descriptionVisible: false,
+        descriptionCount: ''
+    };
+
+    toggleDescription = () => {
+        this.setState({ descriptionCollapsed: !this.state.descriptionCollapsed });
+    };
+
+    onSubmit = formData => console.log(formData);
+
+    getCount = () => {
+        const count = this.state.descriptionCount.split(" ").length;
+
+        if (count === MAX_COUNT) {
+            return count;
+        }
+    }
+
+render() {
+
+    return (
+    <View
+    style={{flex: 1, marginTop: 50, backgroundColor: '#15000f' }}
+    >
+        <Form
+        formStyles={formStyles}
+        onSubmit={this.onSubmit}
+        toastErrors
+        style={styles.form}
+        onValidationError={errors => console.log(errors)}
+        >
+        <Picker name="discipline" type="icon" placeholder="DISCIPLINE" formStyles={formStyles}>
+            <Picker.Item label="Skydiving" value="skydiving" />
+            <Picker.Item label="Base Jumping" value="base" />
+            <Picker.Item label="Wingsuit" value="wingsuit" />
+            <Picker.Item label="Coaching" value="coaching" />
+        </Picker>
+        <TextInput name="eventTitle" placeholder="EVENT TITLE" type="text" required />
+        <DatePicker
+            name="date"
+            type="date"
+            placeholder="DATE"
+            minimumDate={new Date(2018, 1, 1)}
+            date={new Date(2017, 8, 1)}
+            maximumDate={new Date(2030, 1, 1)}
+        />
+        <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
+        <View>
+            <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
+            <View style={styles.descriptionContainer}>
+                <Text style={styles.descriptionText}>DESCRIPTION</Text>
+            </View>
+            </TouchableOpacity>
+
+            <Modal
+            isVisible={this.state.descriptionVisible}
+            onBackdropPress={() => this.setState({ descriptionVisible: false })}
+            onSwipe={() => this.setState({ descriptionVisible: false })}
+            swipeDirection="left"
+            backdropOpacity={1}
+            animationIn="zoomInDown"
+            animationOut="zoomOutUp"
+            animationInTiming={1000}
+            animationOutTiming={1000}
+            backdropTransitionInTiming={1000}
+            backdropTransitionOutTiming={1000}
+            style={styles.model}
+            >
+            <View style={styles.textAreaContainer}>
+                    <TextInput
+                    required
+                    name="description"
+                    type="text"
+                    formStyles={formStyles}
+                    placeholder=" describe the event.."
+                    placeholderTextColor="#81e6fc"
+                    numberOfLines={200}
+                    multiline={true}
+                    maxLength={700}
+                    onChangeText={(value) => this.setState({descriptionCount: value})}
+                    />
+                    <View style={styles.counterContainer}>
+                        <Text style={styles.counter}>{this.state.descriptionCount.split(" ").length}/100</Text>
+                    </View>
+                </View>
+
+            </Modal>
+
+        </View>
+        <TextInput name="location" placeholder="LOCATION" type="text" required />
+
+        <View style={styles.submitButton}>
+            <Button type='submit' text='LIST EVENT'/>
+        </View>
+        </Form>
+            <View style={styles.coloursContainer}>
+                <ColourBars/>   
+            </View>
+    </View>
+    );
+}
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -53,15 +165,23 @@ const styles = StyleSheet.create({
         // fontFamily: 'YRThree_Light',  
     },
     counterContainer: {
-        flex: 1
+        flex: 1,
+        justifyContent: 'flex-end',
+        // marginBottom: 10
     },
     counter: {
-        alignSelf: 'center',
-        flex: 2,
-        justifyContent: 'flex-end',
-        color: '#81e6fc',
-        marginTop: 100,
-        zIndex: 1
+        color: 'white',
+        fontFamily: 'YRThree_Medium',
+        fontSize: 15,
+        alignSelf: 'center'
+    },
+    coloursContainer: {
+        alignContent: 'center',
+        alignItems: 'center',
+        height: 100
+    },
+    modal: {
+        borderWidth: 0.5
     }
 });
 
@@ -92,98 +212,3 @@ const formStyles = {
     activePlaceholderAndSelectionColors: '#6be0f9'
 
 };
-
-let today = moment();
-let now = today.format("YYYY-MM-DD");
-
-export default class EventForm extends React.Component {
-
-    state = {
-        descriptionCollapsed: true,
-        descriptionCount: ''
-    };
-
-    toggleDescription = () => {
-        this.setState({ descriptionCollapsed: !this.state.descriptionCollapsed });
-    };
-
-    onSubmit = formData => console.log(formData);
-
-    getCount = () => {
-        const count = this.state.descriptionCount.split(" ").length;
-
-        if (count === MAX_COUNT) {
-            return count;
-        }
-    }
-
-render() {
-
-    return (
-    <KeyboardAwareScrollView
-    style={{ backgroundColor: '#15000f' }}
-    contentContainerStyle={styles.container} 
-    resetScrollToCoords={{ x: 0, y: 0 }}
-    scrollEnabled={true}
-    >
-        <Form
-        formStyles={formStyles}
-        onSubmit={this.onSubmit}
-        toastErrors
-        style={styles.form}
-        onValidationError={errors => console.log(errors)}
-        >
-        <Picker name="discipline" type="icon" placeholder="DISCIPLINE" formStyles={formStyles}>
-            <Picker.Item label="Skydiving" value="skydiving" />
-            <Picker.Item label="Base Jumping" value="base" />
-            <Picker.Item label="Wingsuit" value="wingsuit" />
-            <Picker.Item label="Coaching" value="coaching" />
-        </Picker>
-        <TextInput name="eventTitle" placeholder="EVENT TITLE" type="text" required />
-        <DatePicker
-            name="date"
-            type="date"
-            placeholder="DATE"
-            minimumDate={new Date(2018, 1, 1)}
-            date={new Date(2017, 8, 1)}
-            maximumDate={new Date(2030, 1, 1)}
-        />
-        <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
-        {/* <TextInput name="description" placeholder="DESCRIPTION" type="text" required /> */}
-        <View>
-            <TouchableOpacity onPress={this.toggleDescription}>
-            <View style={styles.descriptionContainer}>
-                <Text style={styles.descriptionText}>DESCRIPTION</Text>
-            </View>
-            </TouchableOpacity>
-                <Collapsible collapsed={this.state.descriptionCollapsed}>
-                <View style={styles.textAreaContainer}>
-                    <TextInput
-                    required
-                    name="description"
-                    type="text"
-                    formStyles={formStyles}
-                    placeholder=" describe the event.."
-                    placeholderTextColor="#81e6fc"
-                    numberOfLines={200}
-                    multiline={true}
-                    maxLength={700}
-                    onChangeText={(value) => this.setState({descriptionCount: value})}
-                    />
-                    <View style={styles.counterContainer}>
-                        <Text style={styles.counter}>{this.state.descriptionCount.split(" ").length}/100</Text>
-                    </View>
-                </View>
-                </Collapsible>;
-        </View>
-        <TextInput name="location" placeholder="LOCATION" type="text" required />
-
-
-        <View style={styles.submitButton}>
-            <Button type='submit' text='LIST EVENT'/>
-        </View>
-        </Form>
-    </KeyboardAwareScrollView>
-    );
-}
-}

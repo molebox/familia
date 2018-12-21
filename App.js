@@ -58,7 +58,7 @@ export default class App extends React.Component {
       // </Pages>
       // )
     } else {
-      return <ActivityIndicator size="large" color="#0000ff" />
+      return <View style={{alignItems: 'center', alignSelf: 'center'}}><ActivityIndicator size="large" color="#0000ff" /></View>
     }
 
     }

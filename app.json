@@ -1,10 +1,12 @@
 {
   "expo": {
-    "name": "familia-skydiving-app",
-    "description": "WIP: Familia sky/base jumping app....",
-    "slug": "familia-skydiving-app",
+    "name": "FAMILIA",
+    "description": "WIP: Familia sky/base jumping app.... Facebook login doesnt work on Android while in dev mode.",
+    "slug": "familiaSkydivingApp",
     "privacy": "public",
     "sdkVersion": "30.0.0",
+    "facebookAppId": "315884342379807",
+    "facebookDisplayName": "Familia",
     "platforms": [
       "ios",
       "android"

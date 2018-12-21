@@ -8,6 +8,8 @@ import CustomIcon from '../utilities/CustomIcon';
 import Month from './Month';
 import moment from 'moment';
 import Day from './Day';
+import ColourBars from '../colourBars/ColourBars';
+import Profile from '../profile/Profile';
 
 
 let today = moment();
@@ -62,9 +64,9 @@ class EventDescription extends React.Component {
                     <Text style={styles.description}>{this.props.description}</Text>
                 </View>
                 <View style={styles.iconContainer}>
-                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
-                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
-                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                    <View style={styles.iconMargin}><CustomIcon name="Base01" size={20} style={styles.iconStyle}/></View>
+                    <View style={styles.iconMargin}><CustomIcon name="Sky01" size={20} style={styles.iconStyle}/></View>
+                    <View style={styles.iconMargin}><CustomIcon name="Wing01" size={20} style={styles.iconStyle}/></View>
                 </View>
             </View>
         )
@@ -93,28 +95,31 @@ export default class EventList extends React.Component {
     };
 
     render() {
-      return (
-        <Container style={styles.container}>
-            <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
-                <Text style={styles.filterText}>FILTER</Text>
-            </TouchableOpacity>
-            <Collapsible collapsed={this.state.filterCollapsed}>
-                <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
-            </Collapsible>;
-            <Content contentContainerStyle={styles.list}>
-            <SectionList
-            renderItem={({item, index}) => {
-                return <SectionListItem item={item} index={index}/>
-            }}
-            renderSectionHeader={({section}) => {
-                return <SectionHeader section={section}/>
-            }}
-            sections={listData}
-            keyExtractor={(item) => item.id}
-            >
-            </SectionList>
-        </Content>
-    </Container>   
+        return (
+            <Container style={styles.container}>
+                <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
+                    <Text style={styles.filterText}>FILTER</Text>
+                </TouchableOpacity>
+                <Collapsible collapsed={this.state.filterCollapsed}>
+                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                </Collapsible>
+                <Content contentContainerStyle={styles.list}>
+                <SectionList
+                renderItem={({item, index}) => {
+                    return <SectionListItem item={item} index={index}/>
+                }}
+                renderSectionHeader={({section}) => {
+                    return <SectionHeader section={section}/>
+                }}
+                sections={listData}
+                keyExtractor={(item) => item.id}
+                >
+                </SectionList>
+            </Content>
+            <View style={styles.coloursContainer}>
+                <ColourBars/>   
+            </View>
+        </Container>   
     );
     }
 }
@@ -123,6 +128,11 @@ const styles = StyleSheet.create({
     container: {
     flex: 1,
     backgroundColor: '#15000f', 
+    },
+    coloursContainer: {
+        alignContent: 'center',
+        alignItems: 'center',
+        height: 100,
     },
     eventName: {
         fontSize: 15,
@@ -142,7 +152,7 @@ const styles = StyleSheet.create({
     },
     list: {
         width: '80%',
-        height: '70%',
+        height: '85%',
         margin: 20,
         marginTop: 50
     },
@@ -181,6 +191,9 @@ const styles = StyleSheet.create({
     },
     iconStyle: {
         color: '#faf9f9',
+    },
+    iconMargin: {
+        padding: 5
     },
     upArrow: {
         alignSelf: 'center',
