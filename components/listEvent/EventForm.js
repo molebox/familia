@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import {Textarea} from 'native-base';
+import {Textarea, Card, CardItem} from 'native-base';
 import { DatePicker, Picker, Form, TextInput } from 'react-native-form-idable';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Collapsible from 'react-native-collapsible';
@@ -28,19 +28,53 @@ export default class EventForm extends React.Component {
 
     onSubmit = formData => console.log(formData);
 
-    getCount = () => {
-        const count = this.state.descriptionCount.split(" ").length;
+    // onSubmit = formData => {
+    //     const {discipline, eventTitle, date, location, organiser} = formData;
 
-        if (count === MAX_COUNT) {
-            return count;
-        }
-    }
+    //     return (
+    //         <Modal
+    //         isVisible={this.state.descriptionVisible}
+    //         onBackdropPress={() => this.setState({ descriptionVisible: false })}
+    //         onSwipe={() => this.setState({ descriptionVisible: false })}
+    //         swipeDirection="left"
+    //         backdropOpacity={1}
+    //         animationIn="zoomInDown"
+    //         animationOut="zoomOutUp"
+    //         animationInTiming={1000}
+    //         animationOutTiming={1000}
+    //         backdropTransitionInTiming={1000}
+    //         backdropTransitionOutTiming={1000}
+    //         style={styles.model}
+    //         >
+    //         <View style={styles.textAreaContainer}>
+    //             <Card>
+    //                 <CardItem>
+    //                     <Text>{discipline}</Text>
+    //                 </CardItem>
+    //                 <CardItem>
+    //                     <Text>{eventTitle}</Text>
+    //                 </CardItem>
+    //                 <CardItem>
+    //                     <Text>{date}</Text>
+    //                 </CardItem>
+    //                 <CardItem>
+    //                     <Text>{location}</Text>
+    //                 </CardItem>
+    //                 <CardItem>
+    //                     <Text>{organiser}</Text>
+    //                 </CardItem>
+    //             </Card>                   
+    //         </View>
+
+    //         </Modal>
+    //     )
+    // }
 
 render() {
 
     return (
     <View
-    style={{flex: 1, marginTop: 50, backgroundColor: '#15000f' }}
+    style={{flex: 1, marginTop: 100, backgroundColor: '#15000f'}}
     >
         <Form
         formStyles={formStyles}
@@ -68,7 +102,7 @@ render() {
         <View>
             <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
             <View style={styles.descriptionContainer}>
-                <Text style={styles.descriptionText}>DESCRIPTION</Text>
+                <Text style={styles.descriptionText}>{this.state.descriptionCount ? 'Press to view description' : 'DESCRIPTION'}</Text>
             </View>
             </TouchableOpacity>
 
@@ -92,7 +126,7 @@ render() {
                     name="description"
                     type="text"
                     formStyles={formStyles}
-                    placeholder=" describe the event.."
+                    placeholder={this.state.descriptionCount ? this.state.descriptionCount : 'describe the event...'}
                     placeholderTextColor="#81e6fc"
                     numberOfLines={200}
                     multiline={true}
@@ -142,7 +176,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#81e6fc',
     },
     descriptionText: {
-        fontSize: 17,
+        fontSize: 15,
         fontWeight: '300',
         fontFamily: 'YRThree_Light',
         paddingHorizontal: 20,
@@ -160,7 +194,7 @@ const styles = StyleSheet.create({
     },
     textArea: {
         color: '#81e6fc',  
-        fontSize: 17,
+        fontSize: 15,
         fontWeight: '300',
         // fontFamily: 'YRThree_Light',  
     },

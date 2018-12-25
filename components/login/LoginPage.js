@@ -32,21 +32,21 @@ class LoginPage extends React.Component {
         if(user) {
             // Logged in
             that.setState({loggedIn: true});
-            console.log('logged in...', user);
+            // console.log('logged in...', user);
         } else {
             // Logged out
             that.setState({loggedIn: false});
-            console.log('Logged out...');
+            // console.log('Logged out...');
         }
         });
     }
 
 // Register user with email and log user in
 registerUser = (email, password) => {
-    console.log(email, password);
+    // console.log(email, password);
     auth.createUserWithEmailAndPassword(email, password)
     .then((user) => {
-        console.log(email, password, user);
+        // console.log(email, password, user);
         this.setState({loggedIn: true, loginVisible: false});
         this.closeDialog();
     })
@@ -139,8 +139,6 @@ loginWithFacebook = async() => {
 
     render() {
         const {loggedIn} = this.state;
-        console.log('logged in state: ', loggedIn);
-        console.log('loginVisible in state: ', this.state.loginVisible);
         return (
         <View style={styles.container}>
                 {!!loggedIn ? (

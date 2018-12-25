@@ -2,7 +2,7 @@
   "expo": {
     "name": "FAMILIA",
     "description": "WIP: Familia sky/base jumping app.... Facebook login doesnt work on Android while in dev mode.",
-    "slug": "familiaSkydivingApp",
+    "slug": "familia",
     "privacy": "public",
     "sdkVersion": "30.0.0",
     "facebookAppId": "315884342379807",
@@ -27,10 +27,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hungrybearstudio.familiaSkydivingApp"
+      "bundleIdentifier": "com.hungrybearstudio.familia"
     },
     "android": {
-      "package": "com.hungrybearstudio.familiaSkydivingApp"
+      "package": "com.hungrybearstudio.familia"
     }
   }
 }

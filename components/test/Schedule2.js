@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, FlatList, Sec} from 'react-native';
 
 import { Container, Header, Content, List, ListItem, Text } from 'native-base';
-import DaySection from './DaySection.js';
+import DaySection from '../schedule/DaySection.js';
 
 
 class Schedule2 extends React.Component {

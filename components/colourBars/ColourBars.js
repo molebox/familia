@@ -23,14 +23,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-        // justifyContent: 'center'
     },
     elementsContainer: {
         flex: 2,
     },
     profileContainer: {
         flex: 1,
-        // justifyContent: 'flex-end',
         alignSelf: 'flex-end',
         marginTop: 30
     },
