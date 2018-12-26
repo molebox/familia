@@ -6,6 +6,7 @@ import Share from './Share';
 import Merch from './Merch';
 import EventList from './schedule/EventList';
 import EventForm from './listEvent/EventForm';
+import ColourBars from './colourBars/ColourBars';
 
 
 const Scene = ({ index }) => (
@@ -53,10 +54,13 @@ export default class MainApp extends Component {
           textStyle={styles.textStyle}
           underlineStyle={styles.underlineStyle}
           imageStyle={styles.imageStyle}
-          sidePadding={40} // Can't set sidePadding in headerStyle because it's needed to calculate the width of the tabs
+          sidePadding={30} // Can't set sidePadding in headerStyle because it's needed to calculate the width of the tabs
           inactiveOpacity={1}
           fadeLabels={true}
       />
+            <View style={styles.coloursContainer}>
+                <ColourBars/>   
+            </View>
   </View>
     )
   }
@@ -80,5 +84,10 @@ const styles = StyleSheet.create({
       height: 3.6,
       backgroundColor: '#ffc300',
       width: 50
-  }
+  },
+  coloursContainer: {
+    alignContent: 'center',
+    alignItems: 'center',
+    height: 100
+},
 });

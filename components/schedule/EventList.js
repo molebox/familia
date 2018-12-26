@@ -116,9 +116,6 @@ export default class EventList extends React.Component {
                 >
                 </SectionList>
             </Content>
-            <View style={styles.coloursContainer}>
-                <ColourBars/>   
-            </View>
         </Container>   
     );
     }

@@ -147,9 +147,6 @@ render() {
             <Button type='submit' text='LIST EVENT'/>
         </View>
         </Form>
-            <View style={styles.coloursContainer}>
-                <ColourBars/>   
-            </View>
     </View>
     );
 }
@@ -208,11 +205,6 @@ const styles = StyleSheet.create({
         fontFamily: 'YRThree_Medium',
         fontSize: 15,
         alignSelf: 'center'
-    },
-    coloursContainer: {
-        alignContent: 'center',
-        alignItems: 'center',
-        height: 100
     },
     modal: {
         borderWidth: 0.5

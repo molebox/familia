@@ -10,6 +10,7 @@ import MainApp from '../MainApp';
 import { f, auth, database} from '../../config/config';
 import ErrorsAndWarnings from '../utilities/ErrorsAndWarnings';
 import Modal from "react-native-modal";
+import UserContext from '../utilities/UserContext';
 
 class LoginPage extends React.Component {
 
@@ -22,23 +23,24 @@ class LoginPage extends React.Component {
             email: '',
             password: '',
             hasError: false,
-            error: ''
+            error: '',
+            user: {}
         }
 
     // this.registerUser('testemail@gmauil.com', 'password');
     let that = this;
     // Check if user exists
-    f.auth().onAuthStateChanged((user) => {
-        if(user) {
-            // Logged in
-            that.setState({loggedIn: true});
-            // console.log('logged in...', user);
-        } else {
-            // Logged out
-            that.setState({loggedIn: false});
-            // console.log('Logged out...');
-        }
-        });
+    // f.auth().onAuthStateChanged((user) => {
+    //     if(user) {
+    //         // Logged in
+    //         that.setState({loggedIn: true, user});
+    //         console.log('USER DETAILS: ', user);
+    //     } else {
+    //         // Logged out
+    //         that.setState({loggedIn: false});
+    //         // console.log('Logged out...');
+    //     }
+    //     });
     }
 
 // Register user with email and log user in
@@ -103,13 +105,18 @@ loginWithFacebook = async() => {
         type,
         token,
         } = await Expo.Facebook.logInWithReadPermissionsAsync('315884342379807', {
-        permissions: ['public_profile', 'email'],
+        permissions: ['email', 'public_profile'],
     });
     if (type === 'success') {
         // Get the user's name using Facebook's Graph API
-        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+        const response = await fetch(
+            `https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,picture`);
+            // `https://graph.facebook.com/me?access_token=${token}`);
+        
         // Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
-        this.setState({loggedIn: true});
+        const responseJSON = JSON.stringify(await response.json());
+        console.log('response: ', responseJSON);
+        this.setState({loggedIn: true, user: responseJSON});
         } else {
         // type === 'cancel'
         }
@@ -140,7 +147,8 @@ loginWithFacebook = async() => {
     render() {
         const {loggedIn} = this.state;
         return (
-        <View style={styles.container}>
+            <UserContext.Provider value={this.state.user}>
+            <View style={styles.container}>
                 {!!loggedIn ? (
                     <Pages>
                         <MainApp/>      
@@ -271,6 +279,8 @@ loginWithFacebook = async() => {
                 )}
 
         </View>
+            </UserContext.Provider>
+        
         );
     }
 }

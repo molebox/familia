@@ -19,9 +19,6 @@ class Merch extends React.Component {
                         </TouchableOpacity>
                 </Content>
             </Container>
-            <View style={styles.coloursContainer}>
-                <ColourBars/>   
-            </View>
             </View>
         );
     }
@@ -52,12 +49,7 @@ const styles = StyleSheet.create({
         fontWeight: '900',
         color: 'white',
         fontFamily: 'YRThree_Light'
-    },
-    coloursContainer: {
-        alignContent: 'center',
-        alignItems: 'center',
-        height: 100
-    },
+    }
 });
 
 
