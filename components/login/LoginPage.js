@@ -21,10 +21,11 @@ class LoginPage extends React.Component {
             signUpVisible: false,
             loginVisible: false,
             email: '',
+            name: '',
             password: '',
             hasError: false,
             error: '',
-            user: {}
+            user: null
         }
 
     // this.registerUser('testemail@gmauil.com', 'password');
@@ -44,34 +45,44 @@ class LoginPage extends React.Component {
     }
 
 // Register user with email and log user in
-registerUser = (email, password) => {
+registerUser = (email, password, name) => {
     // console.log(email, password);
     auth.createUserWithEmailAndPassword(email, password)
     .then((user) => {
         // console.log(email, password, user);
         this.setState({loggedIn: true, loginVisible: false});
-        this.closeDialog();
     })
     .catch((error) => {
         this.setState({error: error.message, hasError: true, loggedIn: false});
         console.log(error.message);
     });
-};
 
-    closeDialog = () => {
-        const {loggedIn, loginVisible} = this.state;
-        if (loginVisible === false && loggedIn === true) {
-            this.setState({loginVisible: null});
-        }
-    }
+    // f.auth().onAuthStateChanged((user) => {
+    //     if(user) {
+    //         user.updateProfile({
+    //             displayName: name
+    //         })
+    //         this.setState({user});
+    //     } else {
+    //         this.setState({hasError: true});
+    //     }
+    //     });
+};
 
     loginUser = async(email, password) => {
         if (email != '' && password != '') {
         try {
             let user = await auth.signInWithEmailAndPassword(email, password);
             if (user !== undefined) {
-                console.log('LOGGED IN!!!', user);
-                this.setState({loggedIn: true, loginVisible: null});
+
+                // const currentUser = auth.currentUser;
+                // const userInfo = {
+                //     name: currentUser.displayName,
+                //     email: currentUser.email
+                // };
+                // console.log('userInfo: ', currentUser);
+
+                this.setState({loggedIn: true, loginVisible: null, user: user.user});
             }
         } catch(error) {
             this.setState({error: error.message, hasError: true, loggedIn: false});
@@ -111,12 +122,10 @@ loginWithFacebook = async() => {
         // Get the user's name using Facebook's Graph API
         const response = await fetch(
             `https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,picture`);
-            // `https://graph.facebook.com/me?access_token=${token}`);
-        
-        // Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
-        const responseJSON = JSON.stringify(await response.json());
-        console.log('response: ', responseJSON);
-        this.setState({loggedIn: true, user: responseJSON});
+
+        const user = await response.json();
+        this.setState({loggedIn: true, user});
+
         } else {
         // type === 'cancel'
         }
@@ -181,6 +190,14 @@ loginWithFacebook = async() => {
                                     <Form>
                                         <Label style={styles.signUpTitle}>SIGNUP</Label>
                                             <Item floatingLabel>
+                                                <Label style={styles.text}>Name</Label>
+                                                <Input
+                                                style={styles.text}
+                                                onChangeText={(text) => this.setState({name: text})}
+                                                value={this.state.name}
+                                                />
+                                            </Item>
+                                            <Item floatingLabel>
                                                 <Label style={styles.text}>Email</Label>
                                                 <Input
                                                 style={styles.text}
@@ -200,7 +217,7 @@ loginWithFacebook = async() => {
                                             <View style={styles.signUpBtn}>
                                             {!!this.state.hasError ? <View style={styles.error}><ErrorsAndWarnings error={this.state.error}/></View> : null}
                                                 <Button
-                                                onPress={() => this.registerUser(this.state.email, this.state.password)}
+                                                onPress={() => this.registerUser(this.state.email, this.state.password, this.state.name)}
                                                 text="CREATE ACCOUNT"
                                                 />
                                             </View>

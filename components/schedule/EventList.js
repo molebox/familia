@@ -2,19 +2,18 @@ import React from 'react';
 import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
 import { Container, Content , Text} from 'native-base';
 import Collapsible from 'react-native-collapsible';
+import {f, auth, database} from '../../config/config';
 
 import CustomIcon from '../utilities/CustomIcon';
 
 import Month from './Month';
 import moment from 'moment';
 import Day from './Day';
-import ColourBars from '../colourBars/ColourBars';
-import Profile from '../profile/Profile';
 
 
-let today = moment();
-let now = today.format("YYYY-MM-DD");
-let getCurrentMonth = today.month('MMM');
+// let today = moment();
+// let now = today.format("YYYY-MM-DD");
+// let getCurrentMonth = today.month('MMM');
 
 // Display each date there is an event
 class SectionListItem extends React.Component {
@@ -40,7 +39,7 @@ class SectionListItem extends React.Component {
                         <TouchableOpacity onPress={this.toggleDescription}>
                         <View style={styles.info}>
                             <Text style={styles.eventName}>{this.props.item.eventName}</Text>
-                            <Text style={styles.creatorsName}>{this.props.item.creatorsName}</Text>
+                            <Text style={styles.creatorsName}>Coached by {this.props.item.creatorsName}</Text>
                             <Text style={styles.location}>{this.props.item.location}</Text>
                         </View>
                         </TouchableOpacity>
@@ -57,9 +56,9 @@ class EventDescription extends React.Component {
     render() {
         return (
             <View style={styles.descriptionDropdown}>
-                <View style={styles.upArrow}>
+                {/* <View style={styles.upArrow}>
                     <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
-                </View>
+                </View> */}
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.description}>{this.props.description}</Text>
                 </View>
@@ -86,9 +85,59 @@ class SectionHeader extends React.Component {
 
 export default class EventList extends React.Component {
 
-    state = {
-        filterCollapsed: true
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            filterCollapsed: true,
+            listData: [],
+            loading: true
+        }
+    }
+
+    componentDidMount = () => {
+        this.loadEvents();
+    }
+
+    loadEvents = () => {
+        this.setState({listData: []});
+        const that = this;
+
+        database.ref('events').orderByChild('date').once('value').then((snapshot) => {
+            const exists = (snapshot.val() !== null);
+            if (exists) {
+                data = snapshot.val();
+            }
+            const listData = that.state.listData;
+
+            for(var event in data) {
+                const eventObj = data[event];
+                database.ref('users').child(eventObj.creatorsName).once('value').then((snapshot) => {
+                    const exists = (snapshot.val() !== null);
+                    if (exists) {
+                        data = snapshot.val();
+                    }
+                    listData.push(
+                        {
+                        data: [
+                            {
+                            id: event,
+                            eventName: eventObj.eventName,
+                            location: eventObj.location,
+                            description: eventObj.description,
+                            creatorsName: data.name,
+                            date: eventObj.date
+                            }
+                        ],
+                        title: 'JAN'
+                        }    
+                    );
+
+                    that.setState({loading: false});
+                }).catch(error => console.log('error: ', error));
+            }
+        }).catch(error => console.log('error: ', error));
+    }
+
 
     toggleFilter = () => {
         this.setState({ filterCollapsed: !this.state.filterCollapsed });
@@ -111,7 +160,7 @@ export default class EventList extends React.Component {
                 renderSectionHeader={({section}) => {
                     return <SectionHeader section={section}/>
                 }}
-                sections={listData}
+                sections={this.state.listData}
                 keyExtractor={(item) => item.id}
                 >
                 </SectionList>
@@ -218,7 +267,7 @@ const listData = [
             id: 1,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-01-02",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
@@ -226,7 +275,7 @@ const listData = [
             id: 2,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-01-05",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
@@ -234,7 +283,7 @@ const listData = [
             id: 3,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-01-07",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             }
@@ -247,7 +296,7 @@ const listData = [
             id: 4,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-02-10",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
@@ -255,7 +304,7 @@ const listData = [
             id: 5,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-02-13",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
@@ -263,7 +312,7 @@ const listData = [
             id: 6,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-02-22",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             }
@@ -276,7 +325,7 @@ const listData = [
             id: 7,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-03-02",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
@@ -284,14 +333,14 @@ const listData = [
             id: 8,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             },
             {
             id: 9,
             eventName: "WINGS BASS AND BUTTER",
             location: "Brento, Switzerland",
-            creatorsName: "Coached by Adrian Daszkowski",
+            creatorsName: "Adrian Daszkowski",
             date: "2018-03-02",
             description: 'Our instructors are local to Brento, Lauterbrunnen, and Chamonix, meaning that we remain available to you after your initial training. Mt Brento is Europes most popular big wall training site with jumpable weather year-round, and the Brento BASE Schools staﬀ is located there full time. All of these courses are based in the Alps. Brento BASE Schools campus is at Monte Brento, Italy. Rock Drop operates from Chamonix, France. Coaching is available all summer in Lauterbrunnen, Switzerland. Our staﬀ includes instructors ﬂuent in French, Italian, Polish, Spanish, and English'
             }
