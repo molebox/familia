@@ -12,7 +12,7 @@ export default class UserProfile extends React.Component {
                 {context => (
                     <View style={styles.container}>
                     <View style={styles.userInfo}>
-                        <Text style={styles.username}>{context.name ? context.name : 'No name found'}</Text>
+                        <Text style={styles.username}>{!!context.name ? context.name : 'No name found'}</Text>
                         <Text style={styles.email}>{context.email}</Text>
                     </View>
                     <TouchableOpacity style={styles.descriptionContainer}>
@@ -33,7 +33,7 @@ export default class UserProfile extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     text: {
         fontSize: 15,
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     descriptionContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: '#15000f', 
+        // backgroundColor: '#15000f', 
         borderBottomWidth: 0.5,
         borderBottomColor: '#81e6fc',
     },

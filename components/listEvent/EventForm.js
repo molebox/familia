@@ -1,14 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import {Textarea, Card, CardItem} from 'native-base';
 import { DatePicker, Picker, Form, TextInput } from 'react-native-form-idable';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Collapsible from 'react-native-collapsible';
 import Button from '../utilities/Button';
 import moment from 'moment';
 
-import ColourBars from '../colourBars/ColourBars';
 import Modal from "react-native-modal";
+import IconButton from '../utilities/IconButton';
 
 const MAX_COUNT = 100;
 
@@ -18,24 +15,59 @@ let now = today.format("YYYY-MM-DD");
 export default class EventForm extends React.Component {
 
     state = {
+        summaryVisible: false,
         descriptionVisible: false,
-        descriptionCount: ''
+        descriptionCount: '',
+        skySelected: false,
+        baseSelected: false,
+        wingSelected: false,
+        coachSelected: false
     };
 
     toggleDescription = () => {
         this.setState({ descriptionCollapsed: !this.state.descriptionCollapsed });
     };
 
-    onSubmit = formData => console.log(formData);
+    onSubmit = formData => {
 
-    // onSubmit = formData => {
-    //     const {discipline, eventTitle, date, location, organiser} = formData;
+        const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
+        const fullDate = moment(formData.date);
+        const date = fullDate.format('YYYY-MM-DD');
+
+        const formValues = {
+            eventName: formData.eventTitle,
+            date,
+            location: formData.location,
+            creatorsName: formData.organiser,
+            description: this.state.descriptionCount,
+            discipline: []
+        };
+
+        if (skySelected) {
+            formValues.discipline.push('sky02');
+        }
+        if (baseSelected) {
+            formValues.discipline.push('Base02');
+        }
+        if (wingSelected) {
+            formValues.discipline.push('Wing02');
+        }
+        if (coachSelected) {
+            formValues.discipline.push('Coach02');
+        }
+
+        // this.setState({summaryVisible: true});
+        console.log('formValues: ', formValues);
+    }
+
+    // formSummary = (formValues) => {
+    //     const {discipline, eventName, date, location, creatorsName, description} = formValues;
 
     //     return (
     //         <Modal
-    //         isVisible={this.state.descriptionVisible}
-    //         onBackdropPress={() => this.setState({ descriptionVisible: false })}
-    //         onSwipe={() => this.setState({ descriptionVisible: false })}
+    //         isVisible={this.state.summaryVisible}
+    //         onBackdropPress={() => this.setState({ summaryVisible: false })}
+    //         onSwipe={() => this.setState({ summaryVisible: false })}
     //         swipeDirection="left"
     //         backdropOpacity={1}
     //         animationIn="zoomInDown"
@@ -49,10 +81,10 @@ export default class EventForm extends React.Component {
     //         <View style={styles.textAreaContainer}>
     //             <Card>
     //                 <CardItem>
-    //                     <Text>{discipline}</Text>
+    //                     <Text>{eventName}</Text>
     //                 </CardItem>
     //                 <CardItem>
-    //                     <Text>{eventTitle}</Text>
+    //                     <Text>{creatorsName}</Text>
     //                 </CardItem>
     //                 <CardItem>
     //                     <Text>{date}</Text>
@@ -61,7 +93,7 @@ export default class EventForm extends React.Component {
     //                     <Text>{location}</Text>
     //                 </CardItem>
     //                 <CardItem>
-    //                     <Text>{organiser}</Text>
+    //                     <Text>{description}</Text>
     //                 </CardItem>
     //             </Card>                   
     //         </View>
@@ -70,11 +102,41 @@ export default class EventForm extends React.Component {
     //     )
     // }
 
+    setSkydivingState = () => {
+        if (this.state.skySelected === false) {
+            this.setState({skySelected: true});
+        } else if (this.state.skySelected === true) {
+            this.setState({skySelected: false});
+        }
+    }
+    setBaseState = () => {
+        if (this.state.baseSelected === false) {
+            this.setState({baseSelected: true});
+        } else if (this.state.baseSelected === true) {
+            this.setState({baseSelected: false});
+        }
+    }
+    setWingState = () => {
+        if (this.state.wingSelected === false) {
+            this.setState({wingSelected: true});
+        } else if (this.state.wingSelected === true) {
+            this.setState({wingSelected: false});
+        }
+    }
+    setCoachState = () => {
+        if (this.state.coachSelected === false) {
+            this.setState({coachSelected: true});
+        } else if (this.state.coachSelected === true) {
+            this.setState({coachSelected: false});
+        }
+    }
+
 render() {
+    const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
 
     return (
     <View
-    style={{flex: 1, marginTop: 100, backgroundColor: '#15000f'}}
+    style={{flex: 1, marginTop: 100, margin: 10, backgroundColor: '#15000f', width: '90%'}}
     >
         <Form
         formStyles={formStyles}
@@ -83,19 +145,29 @@ render() {
         style={styles.form}
         onValidationError={errors => console.log(errors)}
         >
-        <Picker name="discipline" type="icon" placeholder="DISCIPLINE" formStyles={formStyles}>
-            <Picker.Item label="Skydiving" value="skydiving" />
-            <Picker.Item label="Base Jumping" value="base" />
-            <Picker.Item label="Wingsuit" value="wingsuit" />
-            <Picker.Item label="Coaching" value="coaching" />
-        </Picker>
+
+        <View style={styles.disciplineContainer}>
+            <View style={styles.disciplineText}><Text style={styles.descriptionText}>DISCIPLINE</Text></View>
+            <TouchableOpacity style={styles.iconStyle} onPress={this.setSkydivingState}>
+                <IconButton discipline="sky02" selected={skySelected} disciplineText="skydiving"/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconStyle} onPress={this.setWingState}>
+                <IconButton discipline="Wing02" selected={wingSelected} disciplineText="wingsuit"/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconStyle} onPress={this.setBaseState}>
+                <IconButton discipline="Base02" selected={baseSelected} disciplineText="base"/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconStyle} onPress={this.setCoachState}>
+                <IconButton discipline="Coach02" selected={coachSelected} disciplineText="coaching"/>
+            </TouchableOpacity>
+        </View>
         <TextInput name="eventTitle" placeholder="EVENT TITLE" type="text" required />
         <DatePicker
             name="date"
             type="date"
             placeholder="DATE"
-            minimumDate={new Date(2018, 1, 1)}
-            date={new Date(2017, 8, 1)}
+            minimumDate={new Date(2019, 1, 1)}
+            date={new Date(2019, 1, 1)}
             maximumDate={new Date(2030, 1, 1)}
         />
         <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
@@ -126,11 +198,12 @@ render() {
                     name="description"
                     type="text"
                     formStyles={formStyles}
-                    placeholder={this.state.descriptionCount ? this.state.descriptionCount : 'describe the event...'}
+                    placeholder="describe the event..."
                     placeholderTextColor="#81e6fc"
                     numberOfLines={200}
                     multiline={true}
                     maxLength={700}
+                    value={this.state.descriptionCount ? this.state.descriptionCount : null}
                     onChangeText={(value) => this.setState({descriptionCount: value})}
                     />
                     <View style={styles.counterContainer}>
@@ -172,6 +245,19 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: '#81e6fc',
     },
+    disciplineContainer: {
+        backgroundColor: '#15000f', 
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#81e6fc',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    disciplineText: {
+        alignSelf: 'center',
+    },
+    iconStyle: {
+        alignSelf: 'center',
+    },
     descriptionText: {
         fontSize: 15,
         fontWeight: '300',
@@ -193,12 +279,10 @@ const styles = StyleSheet.create({
         color: '#81e6fc',  
         fontSize: 15,
         fontWeight: '300',
-        // fontFamily: 'YRThree_Light',  
     },
     counterContainer: {
         flex: 1,
         justifyContent: 'flex-end',
-        // marginBottom: 10
     },
     counter: {
         color: 'white',
@@ -226,7 +310,7 @@ const formStyles = {
         paddingVertical: 12,
     },
     inputContainerStyle: {
-
+        
     },
     inputLabelContainer: {
 
@@ -238,3 +322,10 @@ const formStyles = {
     activePlaceholderAndSelectionColors: '#6be0f9'
 
 };
+
+        {/* <Picker name="discipline" type="icon" placeholder="DISCIPLINE" formStyles={formStyles}>
+            <Picker.Item label="Skydiving" value="skydiving"/>
+            <Picker.Item label="Base Jumping" value="base"/>
+            <Picker.Item label="Wingsuit" value="wingsuit"/>
+            <Picker.Item label="Coaching" value="coaching"/>
+        </Picker> */}

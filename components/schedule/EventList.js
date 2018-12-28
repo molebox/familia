@@ -11,9 +11,9 @@ import moment from 'moment';
 import Day from './Day';
 
 
-// let today = moment();
-// let now = today.format("YYYY-MM-DD");
-// let getCurrentMonth = today.month('MMM');
+let today = moment();
+let now = today.format("YYYY-MM-DD");
+let getCurrentMonth = today.month('MMM');
 
 // Display each date there is an event
 class SectionListItem extends React.Component {
@@ -45,7 +45,7 @@ class SectionListItem extends React.Component {
                         </TouchableOpacity>
                 </View>
                 <Collapsible collapsed={this.state.descriptionCollapsed}>
-                    <EventDescription description={this.props.item.description}/>
+                    <EventDescription description={this.props.item.description} discipline={this.props.item.discipline}/>
                 </Collapsible>;
             </View>
         )
@@ -63,9 +63,12 @@ class EventDescription extends React.Component {
                     <Text style={styles.description}>{this.props.description}</Text>
                 </View>
                 <View style={styles.iconContainer}>
-                    <View style={styles.iconMargin}><CustomIcon name="Base01" size={20} style={styles.iconStyle}/></View>
-                    <View style={styles.iconMargin}><CustomIcon name="Sky01" size={20} style={styles.iconStyle}/></View>
-                    <View style={styles.iconMargin}><CustomIcon name="Wing01" size={20} style={styles.iconStyle}/></View>
+                {/* {this.props.discipline.map((discipline) => {
+                    <View style={styles.iconMargin}><CustomIcon name={discipline} size={20} style={styles.iconStyle}/></View>
+                })} */}
+                    <View style={styles.iconMargin}><CustomIcon name={this.props.discipline} size={20} style={styles.iconStyle}/></View>
+                    {/* <View style={styles.iconMargin}><CustomIcon name="Sky01" size={20} style={styles.iconStyle}/></View>
+                    <View style={styles.iconMargin}><CustomIcon name="Wing01" size={20} style={styles.iconStyle}/></View> */}
                 </View>
             </View>
         )
@@ -116,6 +119,22 @@ export default class EventList extends React.Component {
                     if (exists) {
                         data = snapshot.val();
                     }
+
+                    let fullDate = moment(eventObj.date);
+                    fullDate.month();
+                    const month = fullDate.format('MMM');
+
+                    getCurrentMonth.month();
+                    const currentMonth = getCurrentMonth.format('MMM');
+
+                    let title;
+
+                    if (currentMonth === month) {
+                        title = 'THIS MONTH'
+                    } else {
+                        title = month.toUpperCase();
+                    }
+
                     listData.push(
                         {
                         data: [
@@ -124,11 +143,12 @@ export default class EventList extends React.Component {
                             eventName: eventObj.eventName,
                             location: eventObj.location,
                             description: eventObj.description,
-                            creatorsName: data.name,
-                            date: eventObj.date
+                            creatorsName: eventObj.creatorsName,
+                            date: eventObj.date,
+                            discipline: eventObj.discipline,
                             }
                         ],
-                        title: 'JAN'
+                        title
                         }    
                     );
 
