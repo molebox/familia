@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DatePicker, Picker, Form, TextInput } from 'react-native-form-idable';
 import Button from '../utilities/Button';
 import moment from 'moment';
+import { f, auth, database} from '../../config/config';
 
 import Modal from "react-native-modal";
 import IconButton from '../utilities/IconButton';
@@ -43,6 +44,7 @@ export default class EventForm extends React.Component {
             date,
             location: formData.location,
             creatorsName: formData.organiser,
+            creatorsEmail: formData.creatorsEmail,
             description: this.state.descriptionCount,
             discipline: []
         };
@@ -61,8 +63,24 @@ export default class EventForm extends React.Component {
         }
 
         // PUSH DATA TO DATBASE...
+        const newPostKey = f.database().ref().child('events').push().key;
 
-        this.setState({thanksMessageVisible: true, formValues});
+        const updates = {};
+        updates['/events/' + newPostKey] = formValues;
+        
+        return f.database().ref().update(updates);
+
+        this.setState({
+            formValues,
+            summaryVisible: false,
+            descriptionVisible: false,
+            descriptionCount: '',
+            skySelected: false,
+            baseSelected: false,
+            wingSelected: false,
+            coachSelected: false,
+            thanksMessageVisible: true,
+        });
         {this.formSummary()}
         console.log('formValues: ', formValues);
     }
@@ -154,6 +172,7 @@ render() {
             maximumDate={new Date(2030, 1, 1)}
         />
         <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
+        <TextInput name="creatorsEmail" placeholder="EMAIL" type="email" required />
         <View>
             <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
             <View style={styles.descriptionContainer}>

@@ -1,25 +1,9 @@
 import React from 'react';
 import {View, AppLoading, ActivityIndicator} from 'react-native';
 
-import HomePage from './components/HomePage';
-import { Pages } from 'react-native-pages';
-
 import * as firebase from 'firebase';
-import MainApp from './components/MainApp';
-import { Font } from 'expo';
+import * as Expo from 'expo';
 import LoginPage from './components/login/LoginPage';
-import Places from './components/test/Places';
-
-
-// Initialize Firebase
-// const firebaseConfig = {
-//   apiKey: "AIzaSyBSlPQ7HJ7pzlOPE1YVMJEkeEkfyhxWtq0",
-//     authDomain: "test1-acf0d.firebaseapp.com",
-//     databaseURL: "https://test1-acf0d.firebaseio.com",
-//     projectId: "test1-acf0d",
-//     storageBucket: "",
-//     messagingSenderId: "822411268971"
-// };
 
 export default class App extends React.Component {
 

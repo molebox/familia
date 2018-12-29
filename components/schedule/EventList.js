@@ -53,7 +53,9 @@ class SectionListItem extends React.Component {
 }
 
 class EventDescription extends React.Component {
+    
     render() {
+        console.log(this.props.discipline);
         return (
             <View style={styles.descriptionDropdown}>
                 <View >
@@ -63,9 +65,9 @@ class EventDescription extends React.Component {
                     <Text style={styles.description}>{this.props.description}</Text>
                 </View>
                 <View style={styles.iconContainer}>
-                    <View style={styles.iconMargin}><CustomIcon name={this.props.discipline} size={20} style={styles.iconStyle}/></View>
-                    {/* <View style={styles.iconMargin}><CustomIcon name="Sky01" size={20} style={styles.iconStyle}/></View>
-                    <View style={styles.iconMargin}><CustomIcon name="Wing01" size={20} style={styles.iconStyle}/></View> */}
+                {!!this.props.discipline ? (this.props.discipline.map((item) => {
+                    return <View style={styles.iconMargin}><CustomIcon name={item} size={20} style={styles.iconStyle}/></View>
+                })) : null}
                 </View>
             </View>
         );
@@ -90,13 +92,20 @@ export default class EventList extends React.Component {
         this.state = {
             filterCollapsed: true,
             listData: [],
-            loading: true
+            loading: true,
+            refreshing: false
         }
     }
 
     componentDidMount() {
         this.loadEvents();
     }
+
+    onRefresh = () => {
+        this.setState({refreshing: true})
+        this.loadEvents();
+    }
+    
 
     loadEvents = () => {
         this.setState({listData: []});
@@ -149,7 +158,7 @@ export default class EventList extends React.Component {
                         }    
                     );
 
-                    that.setState({loading: false});
+                    that.setState({loading: false, refreshing: false});
                 }).catch(error => console.log('error: ', error));
             }
         }).catch(error => console.log('error: ', error));
@@ -170,6 +179,9 @@ export default class EventList extends React.Component {
             )
         }
 
+        // TODO: NEED TO FIX THIS BETTER
+        this.state.listData.reverse();
+
         return (
             <Container style={styles.container}>
                 <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
@@ -180,6 +192,8 @@ export default class EventList extends React.Component {
                 </Collapsible>
                 <Content contentContainerStyle={styles.list}>
                 <SectionList
+                onRefresh={this.onRefresh}
+                refreshing={this.state.refreshing}
                 renderItem={({item, index}) => {
                     return <SectionListItem item={item} index={index}/>
                 }}
