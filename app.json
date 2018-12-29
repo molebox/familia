@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FAMILIA",
-    "description": "WIP: Familia sky/base jumping app.... Facebook login doesnt work on Android while in dev mode.\nProfile page added. Disciplines on form use icons",
+    "description": "WIP: Familia sky/base jumping app.... Facebook login doesnt work on Android while in dev mode.\nProfile page added. Disciplines on form use icons.\nAdded thank you pop up. Working on Android bug - app not loading after login",
     "slug": "familia",
     "privacy": "public",
     "sdkVersion": "30.0.0",

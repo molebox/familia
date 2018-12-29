@@ -62,7 +62,7 @@ export default class MainApp extends Component {
                 <ColourBars/>   
             </View>
   </View>
-    )
+    );
   }
 }
 

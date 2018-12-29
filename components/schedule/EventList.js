@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
-import { Container, Content , Text} from 'native-base';
+import { Container, Content , Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
 import {f, auth, database} from '../../config/config';
 
@@ -38,7 +38,7 @@ class SectionListItem extends React.Component {
                     </View>
                         <TouchableOpacity onPress={this.toggleDescription}>
                         <View style={styles.info}>
-                            <Text style={styles.eventName}>{this.props.item.eventName}</Text>
+                            <Text style={styles.eventName}>{this.props.item.eventName.toUpperCase()}</Text>
                             <Text style={styles.creatorsName}>Coached by {this.props.item.creatorsName}</Text>
                             <Text style={styles.location}>{this.props.item.location}</Text>
                         </View>
@@ -46,9 +46,9 @@ class SectionListItem extends React.Component {
                 </View>
                 <Collapsible collapsed={this.state.descriptionCollapsed}>
                     <EventDescription description={this.props.item.description} discipline={this.props.item.discipline}/>
-                </Collapsible>;
+                </Collapsible>
             </View>
-        )
+        );
     }
 }
 
@@ -56,22 +56,19 @@ class EventDescription extends React.Component {
     render() {
         return (
             <View style={styles.descriptionDropdown}>
-                {/* <View style={styles.upArrow}>
-                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
-                </View> */}
+                <View >
+                    <Icon name='arrow-up' type="SimpleLineIcons" style={styles.upArrow} />
+                </View>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.description}>{this.props.description}</Text>
                 </View>
                 <View style={styles.iconContainer}>
-                {/* {this.props.discipline.map((discipline) => {
-                    <View style={styles.iconMargin}><CustomIcon name={discipline} size={20} style={styles.iconStyle}/></View>
-                })} */}
                     <View style={styles.iconMargin}><CustomIcon name={this.props.discipline} size={20} style={styles.iconStyle}/></View>
                     {/* <View style={styles.iconMargin}><CustomIcon name="Sky01" size={20} style={styles.iconStyle}/></View>
                     <View style={styles.iconMargin}><CustomIcon name="Wing01" size={20} style={styles.iconStyle}/></View> */}
                 </View>
             </View>
-        )
+        );
     }
 }
 
@@ -82,7 +79,7 @@ class SectionHeader extends React.Component {
         <View style={styles.monthHeader}>
             <Month month={this.props.section.title}/>
         </View>
-        )
+        );
     }
 }
 
@@ -97,7 +94,7 @@ export default class EventList extends React.Component {
         }
     }
 
-    componentDidMount = () => {
+    componentDidMount() {
         this.loadEvents();
     }
 
@@ -164,6 +161,15 @@ export default class EventList extends React.Component {
     };
 
     render() {
+
+        if (!!this.state.loading) {
+            return (
+                <View style={styles.spinner}>
+                    <Spinner color="#81e6fc"/>
+                </View>
+            )
+        }
+
         return (
             <Container style={styles.container}>
                 <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
@@ -204,7 +210,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '300',
         color: '#81e6fc',
-        // fontFamily: 'descriptions',
     },
     creatorsName: {
         fontSize: 13,
@@ -256,13 +261,16 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     iconStyle: {
-        color: '#faf9f9',
+        color: '#faf9f9'
     },
     iconMargin: {
         padding: 5
     },
     upArrow: {
+        color: '#81e6fc',
+        fontSize: 20,
         alignSelf: 'center',
+        padding: 10
     },
     filterTextContainer: {
         marginTop: 30,
@@ -274,6 +282,10 @@ const styles = StyleSheet.create({
         fontSize: 19,
         fontWeight: '300',
         fontFamily: 'YRThree_Medium'
+    },
+    spinner: {
+        flex: 1,
+        justifyContent: 'center',
     }
 
 });

@@ -31,17 +31,17 @@ class LoginPage extends React.Component {
     // this.registerUser('testemail@gmauil.com', 'password');
     let that = this;
     // Check if user exists
-    // f.auth().onAuthStateChanged((user) => {
-    //     if(user) {
-    //         // Logged in
-    //         that.setState({loggedIn: true, user});
-    //         console.log('USER DETAILS: ', user);
-    //     } else {
-    //         // Logged out
-    //         that.setState({loggedIn: false});
-    //         // console.log('Logged out...');
-    //     }
-    //     });
+    f.auth().onAuthStateChanged((user) => {
+        if(user) {
+            // Logged in
+            that.setState({loggedIn: true, user});
+            console.log('USER DETAILS: ', user);
+        } else {
+            // Logged out
+            that.setState({loggedIn: false});
+            // console.log('Logged out...');
+        }
+        });
     }
 
 // Register user with email and log user in

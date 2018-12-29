@@ -21,7 +21,11 @@ export default class EventForm extends React.Component {
         skySelected: false,
         baseSelected: false,
         wingSelected: false,
-        coachSelected: false
+        coachSelected: false,
+        thanksMessageVisible: false,
+        formValues: {},
+        hasError: false,
+        errors: null
     };
 
     toggleDescription = () => {
@@ -56,80 +60,59 @@ export default class EventForm extends React.Component {
             formValues.discipline.push('Coach02');
         }
 
-        // this.setState({summaryVisible: true});
+        // PUSH DATA TO DATBASE...
+
+        this.setState({thanksMessageVisible: true, formValues});
+        {this.formSummary()}
         console.log('formValues: ', formValues);
     }
 
-    // formSummary = (formValues) => {
-    //     const {discipline, eventName, date, location, creatorsName, description} = formValues;
+    formSummary = () => {
+        return (
+            <Modal
+            isVisible={this.state.thanksMessageVisible}
+            onBackdropPress={() => this.setState({ thanksMessageVisible: false })}
+            onSwipe={() => this.setState({ thanksMessageVisible: false })}
+            swipeDirection="left"
+            backdropOpacity={1}
+            animationIn="zoomInDown"
+            animationOut="zoomOutUp"
+            animationInTiming={1000}
+            animationOutTiming={1000}
+            backdropTransitionInTiming={1000}
+            backdropTransitionOutTiming={1000}
+            style={styles.model}
+            >
+                <View>
+                    <View>
+                        <Text style={styles.thankYouTitle}>Thanks.</Text>
+                    </View>    
+                    <View style={styles.thankYouTextContainer}>
+                        <Text style={styles.thankYouText}>So that's now with us.</Text>
+                        <Text style={styles.thankYouText}>Approval time will be anything between 2 and 24hrs depending on how busy we are.</Text>
+                        <Text style={styles.thankYouText}>We'll pop you a confirmation via email once your event is live.</Text>
+                        <Text style={styles.thankYouText}>FAMILIA</Text>
+                    </View>     
+                    <View style={styles.signUpBtn}>
+                        <Button
+                        onPress={() => this.setState({thanksMessageVisible: false})}
+                        text="CLOSE"
+                        />
+                    </View>
+                </View>
 
-    //     return (
-    //         <Modal
-    //         isVisible={this.state.summaryVisible}
-    //         onBackdropPress={() => this.setState({ summaryVisible: false })}
-    //         onSwipe={() => this.setState({ summaryVisible: false })}
-    //         swipeDirection="left"
-    //         backdropOpacity={1}
-    //         animationIn="zoomInDown"
-    //         animationOut="zoomOutUp"
-    //         animationInTiming={1000}
-    //         animationOutTiming={1000}
-    //         backdropTransitionInTiming={1000}
-    //         backdropTransitionOutTiming={1000}
-    //         style={styles.model}
-    //         >
-    //         <View style={styles.textAreaContainer}>
-    //             <Card>
-    //                 <CardItem>
-    //                     <Text>{eventName}</Text>
-    //                 </CardItem>
-    //                 <CardItem>
-    //                     <Text>{creatorsName}</Text>
-    //                 </CardItem>
-    //                 <CardItem>
-    //                     <Text>{date}</Text>
-    //                 </CardItem>
-    //                 <CardItem>
-    //                     <Text>{location}</Text>
-    //                 </CardItem>
-    //                 <CardItem>
-    //                     <Text>{description}</Text>
-    //                 </CardItem>
-    //             </Card>                   
-    //         </View>
+            </Modal>
+        );
+    }
 
-    //         </Modal>
-    //     )
-    // }
+    setSkydivingState = () => this.setState({ skySelected: !this.state.skySelected });
 
-    setSkydivingState = () => {
-        if (this.state.skySelected === false) {
-            this.setState({skySelected: true});
-        } else if (this.state.skySelected === true) {
-            this.setState({skySelected: false});
-        }
-    }
-    setBaseState = () => {
-        if (this.state.baseSelected === false) {
-            this.setState({baseSelected: true});
-        } else if (this.state.baseSelected === true) {
-            this.setState({baseSelected: false});
-        }
-    }
-    setWingState = () => {
-        if (this.state.wingSelected === false) {
-            this.setState({wingSelected: true});
-        } else if (this.state.wingSelected === true) {
-            this.setState({wingSelected: false});
-        }
-    }
-    setCoachState = () => {
-        if (this.state.coachSelected === false) {
-            this.setState({coachSelected: true});
-        } else if (this.state.coachSelected === true) {
-            this.setState({coachSelected: false});
-        }
-    }
+    setBaseState = () => this.setState({ baseSelected: !this.state.baseSelected });
+
+    setWingState = () => this.setState({ wingSelected: !this.state.wingSelected });
+
+    setCoachState = () => this.setState({ coachSelected: !this.state.coachSelected });
+
 
 render() {
     const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
@@ -143,7 +126,7 @@ render() {
         onSubmit={this.onSubmit}
         toastErrors
         style={styles.form}
-        onValidationError={errors => console.log(errors)}
+        onValidationError={errors => this.setState({errors, hasError: true})}
         >
 
         <View style={styles.disciplineContainer}>
@@ -174,7 +157,7 @@ render() {
         <View>
             <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
             <View style={styles.descriptionContainer}>
-                <Text style={styles.descriptionText}>{this.state.descriptionCount ? 'Press to view description' : 'DESCRIPTION'}</Text>
+                <Text style={styles.descriptionText}>{!!this.state.descriptionCount ? 'Press to view description' : 'DESCRIPTION'}</Text>
             </View>
             </TouchableOpacity>
 
@@ -203,7 +186,7 @@ render() {
                     numberOfLines={200}
                     multiline={true}
                     maxLength={700}
-                    value={this.state.descriptionCount ? this.state.descriptionCount : null}
+                    value={!!this.state.descriptionCount ? this.state.descriptionCount : null}
                     onChangeText={(value) => this.setState({descriptionCount: value})}
                     />
                     <View style={styles.counterContainer}>
@@ -220,6 +203,8 @@ render() {
             <Button type='submit' text='LIST EVENT'/>
         </View>
         </Form>
+        {!!this.state.hasError ? <View style={styles.error}><ErrorsAndWarnings error={this.state.errors}/></View> : null}
+        {this.formSummary()}
     </View>
     );
 }
@@ -292,6 +277,28 @@ const styles = StyleSheet.create({
     },
     modal: {
         borderWidth: 0.5
+    },
+    signUpBtn: {
+        marginTop: 35,
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    thankYouText: {
+        color: 'white',
+        fontFamily: 'YRThree_Light',
+        fontSize: 15,
+        paddingVertical: 10
+    },
+    thankYouTitle: {
+        color: 'white',
+        fontFamily: 'YRThree_Medium',
+        fontSize: 35,
+        fontWeight: '500',
+        paddingBottom: 10
+    },
+    error: {
+        marginVertical: 10
     }
 });
 
@@ -322,10 +329,3 @@ const formStyles = {
     activePlaceholderAndSelectionColors: '#6be0f9'
 
 };
-
-        {/* <Picker name="discipline" type="icon" placeholder="DISCIPLINE" formStyles={formStyles}>
-            <Picker.Item label="Skydiving" value="skydiving"/>
-            <Picker.Item label="Base Jumping" value="base"/>
-            <Picker.Item label="Wingsuit" value="wingsuit"/>
-            <Picker.Item label="Coaching" value="coaching"/>
-        </Picker> */}
