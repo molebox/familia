@@ -55,7 +55,6 @@ class SectionListItem extends React.Component {
 class EventDescription extends React.Component {
     
     render() {
-        console.log(this.props.discipline);
         return (
             <View style={styles.descriptionDropdown}>
                 <View >
@@ -65,8 +64,8 @@ class EventDescription extends React.Component {
                     <Text style={styles.description}>{this.props.description}</Text>
                 </View>
                 <View style={styles.iconContainer}>
-                {!!this.props.discipline ? (this.props.discipline.map((item) => {
-                    return <View style={styles.iconMargin}><CustomIcon name={item} size={20} style={styles.iconStyle}/></View>
+                {!!this.props.discipline ? (this.props.discipline.map((item, index) => {
+                    return <View key={index} style={styles.iconMargin}><CustomIcon name={item} size={20} style={styles.iconStyle}/></View>
                 })) : null}
                 </View>
             </View>
@@ -106,61 +105,101 @@ export default class EventList extends React.Component {
         this.loadEvents();
     }
     
+    formatDateToMonth(date) {
+        let fullDate = moment(date);
+        fullDate.month();     
+        const month = fullDate.format('MMM');   
+        return month.toUpperCase();
+    }
+
+    getDateMatches = (date) => {
+        return database
+          .ref('events')
+          .orderByChild('date')
+          .startAt(date)
+          .once("value")
+          .then((snapshot) => {
+            let matches = [];
+            snapshot.forEach((child) => {
+              let val = child.val();
+              const valMonth = this.formatDateToMonth(val.date); 
+              const dateMonth = this.formatDateToMonth(date); 
+              if (dateMonth === valMonth) {
+                matches.push(val);
+              }
+            });
+            return matches;
+          });
+      }
 
     loadEvents = () => {
         this.setState({listData: []});
         const that = this;
 
-        database.ref('events').orderByChild('date').once('value').then((snapshot) => {
+        database.ref('events').once('value').then((snapshot) => {
             const exists = (snapshot.val() !== null);
             if (exists) {
                 data = snapshot.val();
             }
             const listData = that.state.listData;
 
+            let monthData = {title: '', data: []};
+
             for(var event in data) {
                 const eventObj = data[event];
-                database.ref('users').child(eventObj.creatorsName).once('value').then((snapshot) => {
-                    const exists = (snapshot.val() !== null);
-                    if (exists) {
-                        data = snapshot.val();
-                    }
 
-                    let fullDate = moment(eventObj.date);
-                    fullDate.month();
-                    const month = fullDate.format('MMM');
+                // database.ref('users').child(eventObj.creatorsName).once('value').then((snapshot) => {
+                //     const exists = (snapshot.val() !== null);
+                //     if (exists) {
+                //         data = snapshot.val();
+                //     }    
+
+                    const month = this.formatDateToMonth(eventObj.date);   
+                    const title = month;     
 
                     getCurrentMonth.month();
                     const currentMonth = getCurrentMonth.format('MMM');
 
-                    let title;
+                    if (monthData.title === title) {
 
-                    if (currentMonth === month) {
-                        title = 'THIS MONTH'
-                    } else {
-                        title = month.toUpperCase();
-                    }
+                        this.getDateMatches(eventObj.date).then((match) => {
+                            match.map((item) => {
+                                monthData.data.push(item);
+                            })
+                        });
 
-                    listData.push(
-                        {
-                        data: [
-                            {
-                            id: event,
-                            eventName: eventObj.eventName,
-                            location: eventObj.location,
-                            description: eventObj.description,
-                            creatorsName: eventObj.creatorsName,
-                            date: eventObj.date,
-                            discipline: eventObj.discipline,
-                            }
-                        ],
-                        title
-                        }    
-                    );
+                        // monthData.data.push(eventObj);
+
+                        console.log('same month: ', monthData);
+                      } else {
+                        if (currentMonth === month) {     
+                        title = 'THIS MONTH';  
+                        } 
+                        monthData = { title, data: [eventObj] };
+                        listData.push(monthData);
+                      }
+
+                        // listData.push(
+                        //         {
+                        //         data: [
+                        //             {
+                        //             id: event,
+                        //             eventName: eventObj.eventName,
+                        //             location: eventObj.location,
+                        //             description: eventObj.description,
+                        //             creatorsName: eventObj.creatorsName,
+                        //             date: eventObj.date,
+                        //             discipline: eventObj.discipline,
+                        //             }
+                        //         ],
+                        //         title
+                        //         }    
+                        //     );
 
                     that.setState({loading: false, refreshing: false});
-                }).catch(error => console.log('error: ', error));
+                // }).catch(error => console.log('error: ', error));
             }
+
         }).catch(error => console.log('error: ', error));
     }
 
@@ -180,7 +219,7 @@ export default class EventList extends React.Component {
         }
 
         // TODO: NEED TO FIX THIS BETTER
-        this.state.listData.reverse();
+        // this.state.listData.reverse();
 
         return (
             <Container style={styles.container}>
@@ -190,10 +229,11 @@ export default class EventList extends React.Component {
                 <Collapsible collapsed={this.state.filterCollapsed}>
                     <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
                 </Collapsible>
-                <Content contentContainerStyle={styles.list}>
-                <SectionList
+                <Content contentContainerStyle={styles.list}
                 onRefresh={this.onRefresh}
                 refreshing={this.state.refreshing}
+                >
+                <SectionList
                 renderItem={({item, index}) => {
                     return <SectionListItem item={item} index={index}/>
                 }}
@@ -201,7 +241,7 @@ export default class EventList extends React.Component {
                     return <SectionHeader section={section}/>
                 }}
                 sections={this.state.listData}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => item + index}
                 >
                 </SectionList>
             </Content>

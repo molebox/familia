@@ -167,8 +167,8 @@ render() {
             name="date"
             type="date"
             placeholder="DATE"
-            minimumDate={new Date(2019, 1, 1)}
-            date={new Date(2019, 1, 1)}
+            minimumDate={new Date()}
+            date={new Date(2018, 12, 1)}
             maximumDate={new Date(2030, 1, 1)}
         />
         <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
