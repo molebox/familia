@@ -3,6 +3,7 @@ import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
 import { Container, Content , Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
 import {f, auth, database} from '../../config/config';
+import _ from 'lodash';
 
 import CustomIcon from '../utilities/CustomIcon';
 
@@ -14,6 +15,21 @@ import Day from './Day';
 let today = moment();
 let now = today.format("YYYY-MM-DD");
 let getCurrentMonth = today.month('MMM');
+
+const monthOrder = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEPT',
+    'OCT',
+    'NOV', 
+    'DEC'
+];
 
 // Display each date there is an event
 class SectionListItem extends React.Component {
@@ -143,7 +159,12 @@ export default class EventList extends React.Component {
             }
             const listData = that.state.listData;
 
+            const holding = [];
+
             let monthData = {title: '', data: []};
+
+            const thisMonth = { title: 'THIS MONTH', data: []};
+            const otherMonth = { title: '', data: []};
 
             for(var event in data) {
                 const eventObj = data[event];
@@ -155,32 +176,41 @@ export default class EventList extends React.Component {
                 //     }    
 
                     const month = this.formatDateToMonth(eventObj.date);   
-                    const title = month;     
+                    let title;   
+
 
                     getCurrentMonth.month();
                     const currentMonth = getCurrentMonth.format('MMM');
 
-                    if (monthData.title === title) {
+                    // if (monthData.title === title) {
 
-                        this.getDateMatches(eventObj.date).then((match) => {
-                            match.map((item) => {
-                                monthData.data.push(item);
-                            })
-                        });
+                    //     this.getDateMatches(eventObj.date).then((match) => {
+                    //         match.map((item) => {
+                    //             monthData.data.push(item);
+                    //         })
+                    //     });
 
-                        // monthData.data.push(eventObj);
+                    //     // monthData.data.push(eventObj);
 
-                        console.log('same month: ', monthData);
-                      } else {
-                        if (currentMonth === month) {     
+                    //     console.log('same month: ', monthData);
+                    //   } else {
+                    //     if (currentMonth === month) {     
+                    //     title = 'THIS MONTH';  
+                    //     } 
+                    //     monthData = { title, data: [eventObj] };
+
+                    //     listData.push(monthData);
+                    //   }
+
+
+                    if (month === currentMonth.toUpperCase()) {
                         title = 'THIS MONTH';  
-                        } 
-                        monthData = { title, data: [eventObj] };
-                        listData.push(monthData);
-                      }
-
+                    } else {
+                        title = month;                         
+                    }
+                    
                         // listData.push(
-                        //         {
+                        //      {
                         //         data: [
                         //             {
                         //             id: event,
@@ -196,9 +226,98 @@ export default class EventList extends React.Component {
                         //         }    
                         //     );
 
+                    // listData.sort((a, b) => {
+                    //     return (a.title - b.title) || (monthOrder.indexOf(a.title) - monthOrder.indexOf(b.title))
+                    // });
+
+                    holding.push(
+                        {
+                           data: [
+                               {
+                               id: event,
+                               eventName: eventObj.eventName,
+                               location: eventObj.location,
+                               description: eventObj.description,
+                               creatorsName: eventObj.creatorsName,
+                               date: eventObj.date,
+                               discipline: eventObj.discipline,
+                               }
+                           ],
+                           title
+                           }    
+                       );
+
                     that.setState({loading: false, refreshing: false});
                 // }).catch(error => console.log('error: ', error));
             }
+            // console.log('data: ', listData);
+
+            holding.sort((a, b) => a.title < b.title ? -1 : 1);
+    
+               const groupNames = Array.from(new Set(holding.map(k  => k.title)));
+               // console.log('groupNames: ', groupNames);
+    
+               let groups = {};
+    
+               groupNames.forEach(k => {
+                groups[k] = [];
+                });
+    
+                holding.forEach(k => {
+                const month = k.title;
+                // console.log('k: ', k.data[0]);
+              groups[month].push(k.data[0]);
+            });
+    
+            // console.log('groups: ', groups);
+
+            
+            groupNames.map((name) => {
+                let monthInfo = {title: '', data: []};
+                if (monthInfo.title !== '') {
+                    listData.push(monthInfo);     
+                }
+                Object.keys(groups).map((monthName) => {
+                    if (name === monthName) {                    
+                        monthInfo.title = name;   
+                        Object.values(groups).map((element) => {                    
+                            monthInfo.data = element;                     
+                        });  
+                        listData.push(monthInfo);
+                    }
+                                     
+                });
+                           
+            });
+            
+    
+
+            
+
+            // Object.values(groups).forEach(element => {
+            //     console.log('element: ', element); // is the array with the correct dates. need to add it to object with title
+            // });
+ 
+
+            // for(let key in groups) {
+            //     console.log('key: ', key);
+
+            //   for (let event of groups[key]) {
+            //     console.log('event: ', event.data[0]);
+
+            //     if (key === event.title) {
+            //         const info = {title: event.title, data: []};
+            //         info.data.push(event.data[0]);
+            //         listData.push(info);
+            //     }
+
+                
+            //   }
+            // }
+    
+            console.log('listData: ', listData);
+    
+            // console.log('flatArray: ', flatArray);
 
         }).catch(error => console.log('error: ', error));
     }
@@ -345,7 +464,7 @@ const styles = StyleSheet.create({
 });
 
 
-const listData = [
+const dummyData = [
 
     {
         data: [
