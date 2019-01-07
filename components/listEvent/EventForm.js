@@ -16,7 +16,7 @@ let now = today.format("YYYY-MM-DD");
 export default class EventForm extends React.Component {
 
     state = {
-        summaryVisible: false,
+        formSubmitted: false,
         descriptionVisible: false,
         descriptionCount: '',
         skySelected: false,
@@ -24,6 +24,11 @@ export default class EventForm extends React.Component {
         wingSelected: false,
         coachSelected: false,
         thanksMessageVisible: false,
+        // eventTitle: '',
+        // location: '', 
+        // organiser: '',
+        // email: '',
+        date: new Date(),
         formValues: {},
         hasError: false,
         errors: null
@@ -39,7 +44,7 @@ export default class EventForm extends React.Component {
         const fullDate = moment(formData.date);
         const date = fullDate.format('YYYY-MM-DD');
 
-        const formValues = {
+        const values = {
             eventName: formData.eventTitle,
             date,
             location: formData.location,
@@ -50,47 +55,66 @@ export default class EventForm extends React.Component {
         };
 
         if (skySelected) {
-            formValues.discipline.push('sky02');
+            values.discipline.push('sky02');
         }
         if (baseSelected) {
-            formValues.discipline.push('Base02');
+            values.discipline.push('Base02');
         }
         if (wingSelected) {
-            formValues.discipline.push('Wing02');
+            values.discipline.push('Wing02');
         }
         if (coachSelected) {
-            formValues.discipline.push('Coach02');
+            values.discipline.push('Coach02');
         }
 
-        // PUSH DATA TO DATBASE...
-        const newPostKey = f.database().ref().child('events').push().key;
-
-        const updates = {};
-        updates['/events/' + newPostKey] = formValues;
-        
-        return f.database().ref().update(updates);
-
         this.setState({
-            formValues,
-            summaryVisible: false,
-            descriptionVisible: false,
             descriptionCount: '',
             skySelected: false,
             baseSelected: false,
             wingSelected: false,
             coachSelected: false,
-            thanksMessageVisible: true,
-        });
-        {this.formSummary()}
-        console.log('formValues: ', formValues);
+            date: new Date(),
+            formSubmitted: false,
+            eventTitle: '',
+            location: '', 
+            organiser: '',
+            email: ''
+            });
+
+        // PUSH DATA TO DATBASE...
+        const newPostKey = f.database().ref().child('events').push().key;
+  
+        const updates = {};
+        updates['/events/' + newPostKey] = values;
+
+        this.setState({formSubmitted: true, formValues: {}});
+        
+        return f.database().ref().update(updates);
     }
 
+    onClose = () => 
+        this.setState({
+        descriptionCount: '',
+        skySelected: false,
+        baseSelected: false,
+        wingSelected: false,
+        coachSelected: false,
+        date: new Date(),
+        formSubmitted: false
+        });
+
     formSummary = () => {
+        // this.organiserInput.clear();
+        // this.emailInput.clear();
+        // this.locationInput.clear();
+        // this.eventTitleInput.clear();
+
+
         return (
             <Modal
-            isVisible={this.state.thanksMessageVisible}
-            onBackdropPress={() => this.setState({ thanksMessageVisible: false })}
-            onSwipe={() => this.setState({ thanksMessageVisible: false })}
+            isVisible={this.state.formSubmitted}
+            onBackdropPress={() => this.setState({ formSubmitted: false })}
+            onSwipe={() => this.setState({ formSubmitted: false })}
             swipeDirection="left"
             backdropOpacity={1}
             animationIn="zoomInDown"
@@ -113,7 +137,7 @@ export default class EventForm extends React.Component {
                     </View>     
                     <View style={styles.signUpBtn}>
                         <Button
-                        onPress={() => this.setState({thanksMessageVisible: false})}
+                        onPress={() => this.setState({formSubmitted: false})}
                         text="CLOSE"
                         />
                     </View>
@@ -162,17 +186,45 @@ render() {
                 <IconButton discipline="Coach02" selected={coachSelected} disciplineText="coaching"/>
             </TouchableOpacity>
         </View>
-        <TextInput name="eventTitle" placeholder="EVENT TITLE" type="text" required />
+        <TextInput 
+            name="eventTitle" 
+            placeholder="EVENT TITLE" 
+            type="text" 
+            required 
+            autoCorrect={false}  
+            value={this.state.eventTitle}
+            onChangeText={(value) => this.setState({eventTitle: value})}
+            // ref={input => { this.eventTitleInput = input }}
+            />
         <DatePicker
             name="date"
             type="date"
             placeholder="DATE"
             minimumDate={new Date()}
-            date={new Date(2018, 12, 1)}
+            date={this.state.date}
             maximumDate={new Date(2030, 1, 1)}
+            onChangeText={(value) => this.setState({date: value})}
         />
-        <TextInput name="organiser" placeholder="ORGANISER" type="text" required />
-        <TextInput name="creatorsEmail" placeholder="EMAIL" type="email" required />
+        <TextInput 
+            name="organiser" 
+            placeholder="ORGANISER" 
+            type="text" 
+            autoCorrect={false} 
+            value={this.state.organiser}
+            required 
+            onChangeText={(value) => this.setState({organiser: value})}
+            // ref={input => { this.organiserInput = input }}
+        />
+        <TextInput 
+            name="creatorsEmail" 
+            placeholder="EMAIL" 
+            type="email" 
+            autoCorrect={false} 
+            required 
+            value={this.state.email}
+            onChangeText={(value) => this.setState({email: value})}
+            // ref={input => { this.emailInput = input }}
+            />
         <View>
             <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
             <View style={styles.descriptionContainer}>
@@ -216,14 +268,25 @@ render() {
             </Modal>
 
         </View>
-        <TextInput name="location" placeholder="LOCATION" type="text" required />
+        <TextInput 
+        name="location" 
+        placeholder="LOCATION" 
+        type="text" 
+        autoCorrect={false} 
+        required 
+        value={this.state.location}
+        onChangeText={(value) => this.setState({location: value})}
+        // ref={input => { this.locationInput = input }}
+        />
 
         <View style={styles.submitButton}>
-            <Button type='submit' text='LIST EVENT'/>
+            <TouchableOpacity type='submit'>
+                <Button text='LIST EVENT'/>
+            </TouchableOpacity>
         </View>
         </Form>
         {!!this.state.hasError ? <View style={styles.error}><ErrorsAndWarnings error={this.state.errors}/></View> : null}
-        {this.formSummary()}
+        {!!this.state.formSubmitted ? this.formSummary() : null}
     </View>
     );
 }

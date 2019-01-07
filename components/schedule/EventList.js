@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, SectionList, TouchableOpacity, RefreshControl} from 'react-native';
 import { Container, Content , Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
 import {f, auth, database} from '../../config/config';
@@ -128,27 +128,7 @@ export default class EventList extends React.Component {
         return month.toUpperCase();
     }
 
-    getDateMatches = (date) => {
-        return database
-          .ref('events')
-          .orderByChild('date')
-          .startAt(date)
-          .once("value")
-          .then((snapshot) => {
-            let matches = [];
-            snapshot.forEach((child) => {
-              let val = child.val();
-              const valMonth = this.formatDateToMonth(val.date); 
-              const dateMonth = this.formatDateToMonth(date); 
-              if (dateMonth === valMonth) {
-                matches.push(val);
-              }
-            });
-            return matches;
-          });
-      }
-
-    loadEvents = () => {
+    loadEvents = async() => {
         this.setState({listData: []});
         const that = this;
 
@@ -161,74 +141,20 @@ export default class EventList extends React.Component {
 
             const holding = [];
 
-            let monthData = {title: '', data: []};
-
-            const thisMonth = { title: 'THIS MONTH', data: []};
-            const otherMonth = { title: '', data: []};
-
             for(var event in data) {
-                const eventObj = data[event];
-
-                // database.ref('users').child(eventObj.creatorsName).once('value').then((snapshot) => {
-                //     const exists = (snapshot.val() !== null);
-                //     if (exists) {
-                //         data = snapshot.val();
-                //     }    
+                const eventObj = data[event]; 
 
                     const month = this.formatDateToMonth(eventObj.date);   
                     let title;   
 
-
                     getCurrentMonth.month();
                     const currentMonth = getCurrentMonth.format('MMM');
-
-                    // if (monthData.title === title) {
-
-                    //     this.getDateMatches(eventObj.date).then((match) => {
-                    //         match.map((item) => {
-                    //             monthData.data.push(item);
-                    //         })
-                    //     });
-
-                    //     // monthData.data.push(eventObj);
-
-                    //     console.log('same month: ', monthData);
-                    //   } else {
-                    //     if (currentMonth === month) {     
-                    //     title = 'THIS MONTH';  
-                    //     } 
-                    //     monthData = { title, data: [eventObj] };
-
-                    //     listData.push(monthData);
-                    //   }
-
 
                     if (month === currentMonth.toUpperCase()) {
                         title = 'THIS MONTH';  
                     } else {
                         title = month;                         
                     }
-                    
-                        // listData.push(
-                        //      {
-                        //         data: [
-                        //             {
-                        //             id: event,
-                        //             eventName: eventObj.eventName,
-                        //             location: eventObj.location,
-                        //             description: eventObj.description,
-                        //             creatorsName: eventObj.creatorsName,
-                        //             date: eventObj.date,
-                        //             discipline: eventObj.discipline,
-                        //             }
-                        //         ],
-                        //         title
-                        //         }    
-                        //     );
-
-                    // listData.sort((a, b) => {
-                    //     return (a.title - b.title) || (monthOrder.indexOf(a.title) - monthOrder.indexOf(b.title))
-                    // });
 
                     holding.push(
                         {
@@ -246,16 +172,11 @@ export default class EventList extends React.Component {
                            title
                            }    
                        );
-
-                    that.setState({loading: false, refreshing: false});
-                // }).catch(error => console.log('error: ', error));
             }
-            // console.log('data: ', listData);
 
             holding.sort((a, b) => a.title < b.title ? -1 : 1);
     
                const groupNames = Array.from(new Set(holding.map(k  => k.title)));
-               // console.log('groupNames: ', groupNames);
     
                let groups = {};
     
@@ -265,59 +186,28 @@ export default class EventList extends React.Component {
     
                 holding.forEach(k => {
                 const month = k.title;
-                // console.log('k: ', k.data[0]);
               groups[month].push(k.data[0]);
             });
-    
-            // console.log('groups: ', groups);
 
-            
             groupNames.map((name) => {
                 let monthInfo = {title: '', data: []};
-                if (monthInfo.title !== '') {
-                    listData.push(monthInfo);     
-                }
-                Object.keys(groups).map((monthName) => {
-                    if (name === monthName) {                    
-                        monthInfo.title = name;   
-                        Object.values(groups).map((element) => {                    
-                            monthInfo.data = element;                     
-                        });  
+                for(let key in groups) {
+                    if (name === key) {
+                        monthInfo.title = name
+                        monthInfo.data = groups[key];
                         listData.push(monthInfo);
                     }
-                                     
-                });
-                           
+                }
             });
-            
-    
 
-            
-
-            // Object.values(groups).forEach(element => {
-            //     console.log('element: ', element); // is the array with the correct dates. need to add it to object with title
-            // });
- 
-
-            // for(let key in groups) {
-            //     console.log('key: ', key);
-
-            //   for (let event of groups[key]) {
-            //     console.log('event: ', event.data[0]);
-
-            //     if (key === event.title) {
-            //         const info = {title: event.title, data: []};
-            //         info.data.push(event.data[0]);
-            //         listData.push(info);
-            //     }
-
-                
-            //   }
-            // }
-    
-            console.log('listData: ', listData);
-    
-            // console.log('flatArray: ', flatArray);
+            function sortByMonth(arr) {             
+                arr.sort(function(a, b){
+                    return monthOrder.indexOf(a.title)
+                         - monthOrder.indexOf(b.title);
+                });
+              };
+              sortByMonth(listData);
+              that.setState({loading: false, refreshing: false});
 
         }).catch(error => console.log('error: ', error));
     }
@@ -337,9 +227,6 @@ export default class EventList extends React.Component {
             )
         }
 
-        // TODO: NEED TO FIX THIS BETTER
-        // this.state.listData.reverse();
-
         return (
             <Container style={styles.container}>
                 <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
@@ -348,11 +235,10 @@ export default class EventList extends React.Component {
                 <Collapsible collapsed={this.state.filterCollapsed}>
                     <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
                 </Collapsible>
-                <Content contentContainerStyle={styles.list}
-                onRefresh={this.onRefresh}
-                refreshing={this.state.refreshing}
-                >
+                <View style={styles.list}>
                 <SectionList
+                refreshing={this.state.refreshing}
+                onRefresh={this.onRefresh}
                 renderItem={({item, index}) => {
                     return <SectionListItem item={item} index={index}/>
                 }}
@@ -361,9 +247,8 @@ export default class EventList extends React.Component {
                 }}
                 sections={this.state.listData}
                 keyExtractor={(item, index) => item + index}
-                >
-                </SectionList>
-            </Content>
+                />
+            </View>
         </Container>   
     );
     }
