@@ -38,8 +38,8 @@ export default class EventForm extends React.Component {
         this.setState({ descriptionCollapsed: !this.state.descriptionCollapsed });
     };
 
-    onSubmit = formData => {
-
+    onSubmit = (formData) => {
+        console.log('SUBMIT HIT!: ', formData);
         const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
         const fullDate = moment(formData.date);
         const date = fullDate.format('YYYY-MM-DD');
@@ -74,7 +74,7 @@ export default class EventForm extends React.Component {
             wingSelected: false,
             coachSelected: false,
             date: new Date(),
-            formSubmitted: false,
+            formSubmitted: true,
             eventTitle: '',
             location: '', 
             organiser: '',
@@ -86,29 +86,11 @@ export default class EventForm extends React.Component {
   
         const updates = {};
         updates['/events/' + newPostKey] = values;
-
-        this.setState({formSubmitted: true, formValues: {}});
-        
+            
         return f.database().ref().update(updates);
     }
 
-    onClose = () => 
-        this.setState({
-        descriptionCount: '',
-        skySelected: false,
-        baseSelected: false,
-        wingSelected: false,
-        coachSelected: false,
-        date: new Date(),
-        formSubmitted: false
-        });
-
     formSummary = () => {
-        // this.organiserInput.clear();
-        // this.emailInput.clear();
-        // this.locationInput.clear();
-        // this.eventTitleInput.clear();
-
 
         return (
             <Modal
@@ -160,15 +142,16 @@ render() {
     const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
 
     return (
-    <View
-    style={{flex: 1, marginTop: 100, margin: 10, backgroundColor: '#15000f', width: '90%'}}
-    >
+    <View style={{flex: 1, marginTop: 100, margin: 10, backgroundColor: '#15000f', width: '90%'}}>
         <Form
         formStyles={formStyles}
         onSubmit={this.onSubmit}
         toastErrors
         style={styles.form}
-        onValidationError={errors => this.setState({errors, hasError: true})}
+        onValidationError={errors => {
+            console.log('errors: ', errors)
+            this.setState({errors, hasError: true})
+        }}
         >
 
         <View style={styles.disciplineContainer}>
@@ -279,14 +262,48 @@ render() {
         // ref={input => { this.locationInput = input }}
         />
 
-        <View style={styles.submitButton}>
-            <TouchableOpacity type='submit'>
-                <Button text='LIST EVENT'/>
-            </TouchableOpacity>
-        </View>
+       
+            <View style={styles.submitButton}>
+                <Button type="submit" text='LIST EVENT'/>
+            </View>
+       
         </Form>
         {!!this.state.hasError ? <View style={styles.error}><ErrorsAndWarnings error={this.state.errors}/></View> : null}
-        {!!this.state.formSubmitted ? this.formSummary() : null}
+        {!!this.state.formSubmitted ? (
+            <Modal
+            isVisible={this.state.formSubmitted}
+            onBackdropPress={() => this.setState({ formSubmitted: false })}
+            onSwipe={() => this.setState({ formSubmitted: false })}
+            swipeDirection="left"
+            backdropOpacity={1}
+            animationIn="zoomInDown"
+            animationOut="zoomOutUp"
+            animationInTiming={1000}
+            animationOutTiming={1000}
+            backdropTransitionInTiming={1000}
+            backdropTransitionOutTiming={1000}
+            style={styles.model}
+            >
+                <View>
+                    <View>
+                        <Text style={styles.thankYouTitle}>Thanks.</Text>
+                    </View>    
+                    <View style={styles.thankYouTextContainer}>
+                        <Text style={styles.thankYouText}>So that's now with us.</Text>
+                        <Text style={styles.thankYouText}>Approval time will be anything between 2 and 24hrs depending on how busy we are.</Text>
+                        <Text style={styles.thankYouText}>We'll pop you a confirmation via email once your event is live.</Text>
+                        <Text style={styles.thankYouText}>FAMILIA</Text>
+                    </View>     
+                    <View style={styles.signUpBtn}>
+                        <Button
+                        onPress={() => this.setState({formSubmitted: false})}
+                        text="CLOSE"
+                        />
+                    </View>
+                </View>
+
+            </Modal>
+        ) : null}
     </View>
     );
 }
