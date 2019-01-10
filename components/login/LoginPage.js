@@ -49,8 +49,14 @@ registerUser = (email, password, name) => {
     // console.log(email, password);
     auth.createUserWithEmailAndPassword(email, password)
     .then((user) => {
-        // console.log(email, password, user);
-        this.setState({loggedIn: true, loginVisible: false});
+        var currentUser = f.auth().currentUser;
+        currentUser.updateProfile({
+            displayName: name
+        }).then(() => this.setState({loggedIn: true, loginVisible: false, user, name}))
+        .catch((error) => {
+            this.setState({error: error.message, hasError: true, loggedIn: false});
+            console.log(error.message);
+        })  
     })
     .catch((error) => {
         this.setState({error: error.message, hasError: true, loggedIn: false});
@@ -58,13 +64,20 @@ registerUser = (email, password, name) => {
     });
 
     // f.auth().onAuthStateChanged((user) => {
+    //     console.log('USER: ', user);
     //     if(user) {
-    //         user.updateProfile({
-    //             displayName: name
-    //         })
-    //         this.setState({user});
+    //         database.ref('users/' + user.uid).set({
+    //             email: email,
+    //             uid : user.uid,
+    //             username: name
+    //         });
+    //         // Logged in
+    //         this.setState({loggedIn: true, user});
+    //         console.log('USER DETAILS: ', user);
     //     } else {
-    //         this.setState({hasError: true});
+    //         // Logged out
+    //         this.setState({loggedIn: false});
+    //         // console.log('Logged out...');
     //     }
     //     });
 };
@@ -159,9 +172,7 @@ loginWithFacebook = async() => {
             <UserContext.Provider value={this.state.user}>
             <View style={styles.container}>
                 {!!loggedIn ? (
-                    <Pages>
-                        <MainApp/>      
-                    </Pages>
+                    <MainApp/>
                 ) : (
             <View style={styles.container}>
                 <ImageBackground style={styles.image} source={require('../../assets/IPhone-X-Purple.png')} resizeMode={'cover'}>

@@ -12,7 +12,7 @@ export default class UserProfile extends React.Component {
                 {context => (
                     <View style={styles.container}>
                     <View style={styles.userInfo}>
-                        <Text style={styles.username}>{!!context.name ? context.name : 'No name found'}</Text>
+                        <Text style={styles.username}>{!!context.displayName ? context.displayName : 'No name found'}</Text>
                         <Text style={styles.email}>{context.email}</Text>
                     </View>
                     <TouchableOpacity style={styles.descriptionContainer}>

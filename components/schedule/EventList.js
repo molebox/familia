@@ -1,11 +1,12 @@
 import React from 'react';
-import {View, StyleSheet, SectionList, TouchableOpacity, RefreshControl} from 'react-native';
-import { Container, Content , Text, Icon, Spinner } from 'native-base';
+import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
+import { Container, Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
 import {f, auth, database} from '../../config/config';
 import _ from 'lodash';
 
 import CustomIcon from '../utilities/CustomIcon';
+import Filter from '../Filter';
 
 import Month from './Month';
 import moment from 'moment';
@@ -233,7 +234,7 @@ export default class EventList extends React.Component {
                     <Text style={styles.filterText}>FILTER</Text>
                 </TouchableOpacity>
                 <Collapsible collapsed={this.state.filterCollapsed}>
-                    <CustomIcon name="Rate" size={50} style={styles.iconStyle}/>
+                    <Filter/>
                 </Collapsible>
                 <View style={styles.list}>
                 <SectionList

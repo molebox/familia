@@ -1,14 +1,14 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Text, TextInput} from 'react-native';
 import {Formik} from 'formik';
-import Button from './utilities/Button';
+import Button from '../utilities/Button';
 import {Spinner} from 'native-base';
 import moment from 'moment';
-import { f, auth, database} from '../config/config';
+import { f, auth, database} from '../../config/config';
 import Modal from "react-native-modal";
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import IconButton from './utilities/IconButton';
-import ErrorsAndWarnings from './utilities/ErrorsAndWarnings';
+import IconButton from '../utilities/IconButton';
+import ErrorsAndWarnings from '../utilities/ErrorsAndWarnings';
 
 import * as yup from 'yup';
 
@@ -46,7 +46,8 @@ export default class CreateEvent extends React.Component {
           coachSelected: false,
           descriptionCount: '',
           isDateTimePickerVisible: false,
-          date: new Date()
+          date: new Date(),
+          formSubmitted: false
         }
       }
 
@@ -57,12 +58,12 @@ export default class CreateEvent extends React.Component {
     onSubmit = (formData) => {
         console.log('SUBMIT HIT!: ', formData);
         const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
-        const fullDate = moment(this.state.date.toString());
-        const date = fullDate.format('YYYY-MM-DD');
+        const fullDate = moment(formData.date);
+        const formattedDate = fullDate.format('YYYY-MM-DD');
 
         const values = {
             eventName: formData.eventTitle,
-            date: formData.date,
+            date: formattedDate,
             location: formData.location,
             creatorsName: formData.organiser,
             creatorsEmail: formData.email,
@@ -85,26 +86,12 @@ export default class CreateEvent extends React.Component {
 
         console.log('FORM VALUES: ', values);
 
-        // this.setState({
-        //     descriptionCount: '',
-        //     skySelected: false,
-        //     baseSelected: false,
-        //     wingSelected: false,
-        //     coachSelected: false,
-        //     date: new Date(),
-        //     formSubmitted: true,
-        //     eventTitle: '',
-        //     location: '', 
-        //     organiser: '',
-        //     email: ''
-        //     });
-
         // PUSH DATA TO DATBASE...
         const newPostKey = f.database().ref().child('events').push().key;
   
         const updates = {};
         updates['/events/' + newPostKey] = values;
-            
+
         return f.database().ref().update(updates);
     }
 
@@ -122,7 +109,6 @@ export default class CreateEvent extends React.Component {
 
     _handleDatePicked = (date) => {
         this.setState({date});
-        console.log('A date has been picked: ', date);
         this._hideDateTimePicker();
       };
 
@@ -134,20 +120,30 @@ export default class CreateEvent extends React.Component {
 
     render() {
         const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
+
         return (
             <View style={{flex: 1, marginTop: 100, margin: 10, backgroundColor: '#15000f', width: '90%'}}>
                 <Formik
                 initialValues={initialValues}
                 onSubmit={(values, actions) => {
-                    // this.setState({formData: values});
                     this.onSubmit(values);
                     setTimeout(() => {
-                        actions.setSubmitting(false)
-                    }, 1000);
+                        actions.setSubmitting(false);
+                        this.setState({
+                            skySelected: false,
+                            baseSelected: false,
+                            wingSelected: false,
+                            coachSelected: false,
+                            formSubmitted: true, 
+                            date: new Date
+                        });
+                        actions.resetForm();
+                    }, 2000);
+                    
                 }}
                 validationSchema={validationSchema}
                 >
-                {({handleChange, handleSubmit, values, isSubmitting, handleBlur, errors, handleReset}) => (
+                {({handleChange, handleSubmit, values, isSubmitting, handleBlur, errors, handleReset, setFieldValue, touched, isValid}) => (
                 <View>
                     <View style={styles.disciplineContainer}>
                         <View style={styles.disciplineText}><Text style={styles.descriptionText}>DISCIPLINE</Text></View>
@@ -169,11 +165,11 @@ export default class CreateEvent extends React.Component {
                         style={styles.fieldText}
                         placeholder="EVENT TITLE" 
                         placeholderTextColor="#81e6fc"
-                        value={values.eventTitle}
+                        value={values.eventTitle || ''}
                         onChangeText={handleChange('eventTitle')}
                         onBlur={handleBlur('eventTitle')}
                         />
-                      {!!errors.eventTitle ? <View style={styles.error}><ErrorsAndWarnings error={errors.eventTitle}/></View> : null}
+                      {!!errors.eventTitle && !!touched.eventTitle ? <View style={styles.error}><ErrorsAndWarnings error={errors.eventTitle}/></View> : null}
                     </View>
                     <View>
                     <TouchableOpacity onPress={() => this.setState({isDateTimePickerVisible: true})}>
@@ -185,8 +181,10 @@ export default class CreateEvent extends React.Component {
                     isVisible={this.state.isDateTimePickerVisible}
                     onConfirm={this._handleDatePicked}
                     onCancel={this._hideDateTimePicker}
+                    minimumDate={new Date()}
+                    onDateChange={date => setFieldValue('date', date)}
                     />
-                    {!!errors.date ? <View style={styles.error}><ErrorsAndWarnings error={errors.date}/></View> : null}
+                    {!!errors.date && !!touched.date ? <View style={styles.error}><ErrorsAndWarnings error={errors.date}/></View> : null}
                     </View>
 
         <View style={styles.inputContainer}>
@@ -194,27 +192,28 @@ export default class CreateEvent extends React.Component {
             style={styles.fieldText}
             placeholder="ORGANISER" 
             placeholderTextColor="#81e6fc"
-            value={values.organiser}
+            value={values.organiser || ''}
             onChangeText={handleChange('organiser')}
             onBlur={handleBlur('organiser')}
             />
-            {!!errors.organiser ? <View style={styles.error}><ErrorsAndWarnings error={errors.organiser}/></View> : null}
+            {!!errors.organiser && !!touched.organiser ? <View style={styles.error}><ErrorsAndWarnings error={errors.organiser}/></View> : null}
         </View>
         <View style={styles.inputContainer}>
             <TextInput 
             style={styles.fieldText}
             placeholder="EMAIL" 
             placeholderTextColor="#81e6fc"
-            value={values.email}
+            value={values.email || ''}
             onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
             />
-            {!!errors.email ? <View style={styles.error}><ErrorsAndWarnings error={errors.email}/></View> : null}
+            {!!errors.email && !!touched.email ? <View style={styles.error}><ErrorsAndWarnings error={errors.email}/></View> : null}
         </View>
         <View>
             <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
             <View style={styles.inputContainer}>
-                <Text style={styles.descriptionText}>{!!this.state.descriptionCount ? 'Press to view description' : 'DESCRIPTION'}</Text>
+                <Text style={styles.descriptionText}>{!!values.description ? 'Press to view description' : 'DESCRIPTION'}</Text>
+                {!!errors.description && touched.description ? <View style={styles.error}><ErrorsAndWarnings error={errors.description}/></View> : null}
             </View>
             </TouchableOpacity>
 
@@ -240,16 +239,13 @@ export default class CreateEvent extends React.Component {
                         numberOfLines={200}
                         multiline={true}
                         maxLength={700}
-                        value={values.description}
-                        // value={!!this.state.descriptionCount ? this.state.descriptionCount : null}
+                        value={values.description || ''}
                         onChangeText={handleChange('description')}
                         />
                         <View style={styles.counterContainer}>
-                            <Text style={styles.counter}>{this.state.descriptionCount.split(" ").length}/100</Text>
+                            <Text style={styles.counter}>{values.description.split(" ").length}/100</Text>
                         </View>
-                        {!!errors.description ? <View style={styles.error}><ErrorsAndWarnings error={errors.description}/></View> : null}
                     </View>
-
                 </Modal>
 
         </View>
@@ -258,37 +254,75 @@ export default class CreateEvent extends React.Component {
             style={styles.fieldText}
             placeholder="LOCATION" 
             placeholderTextColor="#81e6fc"
-            value={values.location}
+            value={values.location || ''}
             onChangeText={handleChange('location')}
             onBlur={handleBlur('location')}
             />
-           {!!errors.location ?  <View style={styles.error}><ErrorsAndWarnings error={errors.location}/></View> : null}
+           {!!errors.location && !!touched.location ? <View style={styles.error}><ErrorsAndWarnings error={errors.location}/></View> : null}
         </View>
         <View style={styles.inputContainer}>
             <TextInput 
             style={styles.fieldText}
             placeholder="LINK" 
             placeholderTextColor="#81e6fc"
-            value={values.link}
+            value={values.link || ''}
             onChangeText={handleChange('link')}
             onBlur={handleBlur('link')}
             />
-            {!!errors.link ? <View style={styles.error}><ErrorsAndWarnings error={errors.link}/></View> : null}
+            {!!errors.link && !!touched.link ? <View style={styles.error}><ErrorsAndWarnings error={errors.link}/></View> : null}
         </View>
             {!!isSubmitting ? (
                 <Spinner color="#81e6fc"/>
             ) : (
                 <View style={styles.submitButton}>
-                    <Button type="submit" onPress={handleSubmit} text='LIST EVENT'/>
+                    <Button type="submit" disabled={!isValid} onPress={handleSubmit} text='LIST EVENT'/>
                 </View>
             )}
                 <View style={styles.submitButton}>
-                    <Button onPress={handleReset} text='RESET'/>
+                    <Button disabled={isSubmitting} onPress={() => handleReset(initialValues)} text='RESET'/>
                 </View>
               
         </View>
                 )}         
                 </Formik>
+
+        {!!this.state.formSubmitted ? (
+            <View>
+                <Modal
+                    isVisible={this.state.formSubmitted}
+                    onBackdropPress={() => this.setState({ formSubmitted: false })}
+                    onSwipe={() => this.setState({ formSubmitted: false })}
+                    swipeDirection="left"
+                    backdropOpacity={1}
+                    animationIn="zoomInDown"
+                    animationOut="zoomOutUp"
+                    animationInTiming={2000}
+                    animationOutTiming={2000}
+                    backdropTransitionInTiming={2000}
+                    backdropTransitionOutTiming={2000}
+                    style={styles.model}
+                    >
+                <View>
+                    <View>
+                        <Text style={styles.thankYouTitle}>Thanks.</Text>
+                    </View>    
+                    <View style={styles.thankYouTextContainer}>
+                        <Text style={styles.thankYouText}>So that's now with us.</Text>
+                        <Text style={styles.thankYouText}>Approval time will be anything between 2 and 24hrs depending on how busy we are.</Text>
+                        <Text style={styles.thankYouText}>We'll pop you a confirmation via email once your event is live.</Text>
+                        <Text style={styles.thankYouText}>FAMILIA</Text>
+                    </View>     
+                    <View style={styles.signUpBtn}>
+                        <Button
+                        onPress={() => this.setState({formSubmitted: false})}
+                        text="CLOSE"
+                        />
+                    </View>
+                </View>
+
+            </Modal>
+            </View>
+        ) : null}
             </View>
         );
     }
@@ -300,10 +334,6 @@ const styles = StyleSheet.create({
         marginTop: 60,
         margin: 20,
         backgroundColor: '#15000f', 
-    },
-    form: {
-        // borderTopWidth: 1,
-        // borderTopColor: '#ddd',
     },
     submitButton: {
         marginVertical: 20,

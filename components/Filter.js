@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
-import ListEvent from './ListEvent';
 
 class Filter extends React.Component {
     constructor(props) {

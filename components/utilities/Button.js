@@ -7,9 +7,9 @@ class Button extends Component {
 
         if (!!disabled) {
             return (
-                <View style={styles.disabledBtn}>
+                <TouchableOpacity style={styles.disabledBtn}>
                     <Text style={styles.text}>{this.props.text}</Text>
-                </View >
+                </TouchableOpacity >
             );
         }
 
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'grey',
         padding: 10,
-        width: 100,
+        width: 200,
         borderRadius: 20,
         borderColor: '#81e6fc',
         borderWidth: 1,
