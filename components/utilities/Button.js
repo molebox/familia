@@ -7,9 +7,9 @@ class Button extends Component {
 
         if (!!disabled) {
             return (
-                <TouchableOpacity style={styles.disabledBtn}>
+                <View style={styles.disabledBtn}>
                     <Text style={styles.text}>{this.props.text}</Text>
-                </TouchableOpacity >
+                </View>
             );
         }
 

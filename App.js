@@ -34,15 +34,8 @@ export default class App extends React.Component {
 
     if (this.state.fontLoaded) {
       return <LoginPage/>
-      // return (
-      //   <Pages>
-      //   {/* <HomePage /> */}
-      //   {/* <LoginPage/> */}
-      //   <MainApp/>      
-      // </Pages>
-      // )
     } else {
-      return <View style={{alignItems: 'center', alignSelf: 'center'}}><ActivityIndicator size="large" color="#0000ff" /></View>
+      return <View style={{alignItems: 'center', alignSelf: 'center'}}><ActivityIndicator size="large" color="#81e6fc" /></View>
     }
 
     }

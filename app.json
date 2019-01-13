@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FAMILIA",
-    "description": "Working: login, view events, create new events, view profile (not finished)",
+    "description": "Working: Date error fixed",
     "slug": "familia",
     "privacy": "public",
     "sdkVersion": "31.0.0",
@@ -15,7 +15,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/IPhone-X-Purple.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

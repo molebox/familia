@@ -22,13 +22,14 @@ class LoginPage extends React.Component {
             loginVisible: false,
             email: '',
             name: '',
+            displayName: '',
             password: '',
             hasError: false,
             error: '',
-            user: null
+            user: null,
+            isAdmin: false
         }
 
-    // this.registerUser('testemail@gmauil.com', 'password');
     let that = this;
     // Check if user exists
     f.auth().onAuthStateChanged((user) => {
@@ -39,62 +40,49 @@ class LoginPage extends React.Component {
         } else {
             // Logged out
             that.setState({loggedIn: false});
-            // console.log('Logged out...');
         }
         });
     }
 
-// Register user with email and log user in
-registerUser = (email, password, name) => {
-    // console.log(email, password);
-    auth.createUserWithEmailAndPassword(email, password)
-    .then((user) => {
-        var currentUser = f.auth().currentUser;
-        currentUser.updateProfile({
-            displayName: name
-        }).then(() => this.setState({loggedIn: true, loginVisible: false, user, name}))
+    // Create the new users and put thier details in the database
+    createUserObject = (userObj, email, name) => {
+        console.log('create user object: ', userObj, email);
+
+        const uObj = {
+            name,
+            isAdmin: false,
+            email
+        };
+        console.log('uObj: ', uObj);
+        database.ref('users').child(userObj.uid).set(uObj);
+    }
+
+    // Register user with email and log user in
+    registerUser = (email, password, name) => {
+        auth.createUserWithEmailAndPassword(email, password)
+        .then((user) => {
+            var currentUser = f.auth().currentUser;
+            console.log('currentUser: ', currentUser);
+            this.createUserObject(user.user, email, name);
+            currentUser.updateProfile({
+                displayName: name
+            }).then(() => this.setState({loggedIn: true, loginVisible: false, user: user.user, name, displayName: name}))
+            .catch((error) => {
+                this.setState({error: error.message, hasError: true, loggedIn: false});
+                console.log(error.message);
+            })  
+        })
         .catch((error) => {
             this.setState({error: error.message, hasError: true, loggedIn: false});
             console.log(error.message);
-        })  
-    })
-    .catch((error) => {
-        this.setState({error: error.message, hasError: true, loggedIn: false});
-        console.log(error.message);
-    });
-
-    // f.auth().onAuthStateChanged((user) => {
-    //     console.log('USER: ', user);
-    //     if(user) {
-    //         database.ref('users/' + user.uid).set({
-    //             email: email,
-    //             uid : user.uid,
-    //             username: name
-    //         });
-    //         // Logged in
-    //         this.setState({loggedIn: true, user});
-    //         console.log('USER DETAILS: ', user);
-    //     } else {
-    //         // Logged out
-    //         this.setState({loggedIn: false});
-    //         // console.log('Logged out...');
-    //     }
-    //     });
-};
+        });
+    };
 
     loginUser = async(email, password) => {
         if (email != '' && password != '') {
         try {
             let user = await auth.signInWithEmailAndPassword(email, password);
             if (user !== undefined) {
-
-                // const currentUser = auth.currentUser;
-                // const userInfo = {
-                //     name: currentUser.displayName,
-                //     email: currentUser.email
-                // };
-                // console.log('userInfo: ', currentUser);
-
                 this.setState({loggedIn: true, loginVisible: null, user: user.user});
             }
         } catch(error) {
@@ -104,7 +92,6 @@ registerUser = (email, password, name) => {
     } else {
         // if empty
         this.setState({error: 'Missing email or password', hasError: true});
-        // alert('Missing email or password');
     }
 }
 
@@ -160,6 +147,7 @@ loginWithFacebook = async() => {
     signUserOut = () => {
         auth.signOut()
         .then(() => {
+            this.setState({loggedIn: false});
             console.log('Logged out...');
         }).catch((error) => {
             this.setState({error: error.message, hasError: true});
@@ -169,7 +157,7 @@ loginWithFacebook = async() => {
     render() {
         const {loggedIn} = this.state;
         return (
-            <UserContext.Provider value={this.state.user}>
+            <UserContext.Provider value={{state: this.state, signUserOut: this.signUserOut}}>
             <View style={styles.container}>
                 {!!loggedIn ? (
                     <MainApp/>

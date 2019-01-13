@@ -4,7 +4,7 @@ import {Formik} from 'formik';
 import Button from '../utilities/Button';
 import {Spinner} from 'native-base';
 import moment from 'moment';
-import { f, auth, database} from '../../config/config';
+import {f, database, auth} from '../../config/config';
 import Modal from "react-native-modal";
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import IconButton from '../utilities/IconButton';
@@ -14,11 +14,11 @@ import * as yup from 'yup';
 
 const validationSchema = yup.object().shape({
     eventTitle: yup.string().required('Event title is required'),
-    email: yup.string().email().required('Email is required'),
+    email: yup.string().email('Invalid email').required('Email is required'),
     location: yup.string().required('Location is required'),
     description: yup.string().required('Description is required'),
     organiser: yup.string().required('Organiser is required'),
-    link: yup.string().url(),
+    link: yup.string().url('Invalid url'),
     // date: yup.date().required('A date is required')
 })
 
@@ -33,6 +33,7 @@ const initialValues = {
     link: ''
 }
 let today = moment();
+let now = today.format("YYYY-MM-DD");
 
 export default class CreateEvent extends React.Component {
 
@@ -56,14 +57,14 @@ export default class CreateEvent extends React.Component {
     };
 
     onSubmit = (formData) => {
-        console.log('SUBMIT HIT!: ', formData);
-        const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
-        const fullDate = moment(formData.date);
-        const formattedDate = fullDate.format('YYYY-MM-DD');
+        const {skySelected, baseSelected, wingSelected, coachSelected, date} = this.state;
+
+        let fullDate = moment(date);
+        const chosenDate = fullDate.format('YYYY-MM-DD');
 
         const values = {
             eventName: formData.eventTitle,
-            date: formattedDate,
+            date: chosenDate,
             location: formData.location,
             creatorsName: formData.organiser,
             creatorsEmail: formData.email,
@@ -84,13 +85,14 @@ export default class CreateEvent extends React.Component {
             values.discipline.push('Coach02');
         }
 
-        console.log('FORM VALUES: ', values);
-
         // PUSH DATA TO DATBASE...
-        const newPostKey = f.database().ref().child('events').push().key;
+        const newPostKey = f.database().ref().child('tempEvents').push().key;
+        //Set user photos object
+        const userId = f.auth().currentUser.uid;
+        database.ref("/users/" + userId + "/usersEvents/" + newPostKey).set(values);
   
         const updates = {};
-        updates['/events/' + newPostKey] = values;
+        updates['/tempEvents/' + newPostKey] = values;
 
         return f.database().ref().update(updates);
     }
@@ -108,7 +110,7 @@ export default class CreateEvent extends React.Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (date) => {
-        this.setState({date});
+        this.setState({date});   
         this._hideDateTimePicker();
       };
 

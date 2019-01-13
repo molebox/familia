@@ -3,27 +3,48 @@ import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 import CustomIcon from '../utilities/CustomIcon';
 import UserContext from '../utilities/UserContext';
+import LoginPage from '../login/LoginPage';
+import Button from '../utilities/Button';
 
 export default class UserProfile extends React.Component {
 
+    getUsername = (context) => {
+        console.log('CONTEXT: ', context);
+        if (!!context.state.user.displayName) return <Text style={styles.username}>{context.state.user.displayName}</Text>;
+        if (!!context.state.user.name) return <Text style={styles.username}>{context.state.user.name}</Text>;
+        return <Text style={styles.username}>No name found</Text>;
+    }
+
+    checkLogoutStatus = (context) => {
+        if (context.state.loggedIn === false) return <LoginPage/>;
+    }
+
+
     render() {
+
+        
+
         return (
             <UserContext.Consumer>
                 {context => (
                     <View style={styles.container}>
-                    <View style={styles.userInfo}>
-                        <Text style={styles.username}>{!!context.displayName ? context.displayName : 'No name found'}</Text>
-                        <Text style={styles.email}>{context.email}</Text>
+                        <View style={styles.userInfo}>
+                            {this.getUsername(context)}
+                            <Text style={styles.email}>{context.state.user.email}</Text>
+                        </View>
+                        <TouchableOpacity style={styles.descriptionContainer}>
+                            <View style={styles.textContainer}><Text style={styles.descriptionText}>EDIT/DELETE MY EVENT</Text></View>
+                            <View style={styles.iconContainer}><CustomIcon name="edit" size={30} style={styles.iconStyle}/></View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.descriptionContainer} onPress={context.signUserOut}>
+                            <View style={styles.textContainer}><Text style={styles.descriptionText}>LOGOUT</Text></View>
+                            <View style={styles.iconContainer}><CustomIcon name="Logout" size={30} style={styles.iconStyle}/></View>
+                        </TouchableOpacity>
+                        {this.checkLogoutStatus(context)}
+                        <View style={styles.closeBtn}>
+                            <Button onPress={this.props.closeModel} text='Close'/>
+                        </View>
                     </View>
-                    <TouchableOpacity style={styles.descriptionContainer}>
-                        <View style={styles.textContainer}><Text style={styles.descriptionText}>EDIT/DELETE MY EVENT</Text></View>
-                        <View style={styles.iconContainer}><CustomIcon name="edit" size={30} style={styles.iconStyle}/></View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.descriptionContainer}>
-                        <View style={styles.textContainer}><Text style={styles.descriptionText}>LOGOUT</Text></View>
-                        <View style={styles.iconContainer}><CustomIcon name="Logout" size={30} style={styles.iconStyle}/></View>
-                    </TouchableOpacity>
-                </View>
                 )}     
             </UserContext.Consumer>
         );
@@ -76,5 +97,9 @@ const styles = StyleSheet.create({
     },
     iconStyle: {
         color: '#faf9f9',
+    },
+    closeBtn: {
+        marginVertical: 20,
+        alignItems: 'center'
     },
 })
