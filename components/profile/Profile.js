@@ -1,25 +1,50 @@
 import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {f, database, auth} from '../../config/config';
+
 import CustomIcon from '../utilities/CustomIcon';
 import UserProfile from './UserProfile';
 import Modal from 'react-native-modal';
+import AdminProfile from './AdminProfile';
 
 export default class Profile extends React.Component {
 
-    state = {showProfile: false};
+    state = {
+        showProfile: false,
+        isAdmin: false
+    };
 
-    onShowProfilePress = () => this.setState({showProfile: true});
+    onShowProfilePress = () => this.setState({showProfile: !this.state.showProfile});
+
+    componentDidMount() {
+        const that = this;
+        database.ref('users/').once('value', (snapshot) => {
+            const exists = (snapshot.val() !== null);
+            if (exists) {
+                data = snapshot.val();
+            }
+
+            for(var user in data) {
+                const userInfo = data[user];
+                if (userInfo.isAdmin) {
+                    that.setState({isAdmin: true});
+                    console.log('USERDATA: ', userInfo);
+                }            
+            }         
+        })
+      
+    }
 
     render() {
-        const {showProfile} = this.state;
+        const {showProfile, isAdmin} = this.state;
 
-        if (showProfile === true) {
+        if (showProfile === true && isAdmin === true) {
             return (
                 <Modal 
                 isVisible={this.state.showProfile}
-                onBackdropPress={() => this.setState({ showProfile: false })}
-                onSwipe={() => this.setState({ showProfile: false })}
-                swipeDirection="left"
+                // onBackdropPress={() => this.setState({ showProfile: false })}
+                // onSwipe={() => this.setState({ showProfile: false })}
+                // swipeDirection="left"
                 backdropOpacity={1}
                 animationIn="zoomInDown"
                 animationOut="zoomOutUp"
@@ -28,7 +53,25 @@ export default class Profile extends React.Component {
                 backdropTransitionInTiming={1000}
                 backdropTransitionOutTiming={1000}
                 >
-                    <UserProfile/>
+                    <AdminProfile closeModel={this.onShowProfilePress}/>
+                </Modal>
+            )
+        } else if (showProfile === true) {
+            return (
+                <Modal 
+                isVisible={this.state.showProfile}
+                // onBackdropPress={() => this.setState({ showProfile: false })}
+                // onSwipe={() => this.setState({ showProfile: false })}
+                // swipeDirection="left"
+                backdropOpacity={1}
+                animationIn="zoomInDown"
+                animationOut="zoomOutUp"
+                animationInTiming={1000}
+                animationOutTiming={1000}
+                backdropTransitionInTiming={1000}
+                backdropTransitionOutTiming={1000}
+                >
+                    <UserProfile closeModel={this.onShowProfilePress}/>
                 </Modal>
             )
         }
