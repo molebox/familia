@@ -1,8 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
-import TickerBar from './Tickerbar';
-import ListEvent from './ListEvent';
 
 class Filter extends React.Component {
     constructor(props) {
@@ -12,7 +10,6 @@ class Filter extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-             <TickerBar/>
                 <View style={styles.main}>
                 <Text style={styles.textStyle}>SOME FILTER HERE - SKYDIVING - BASE JUMPING ETC...</Text>  
                 </View>

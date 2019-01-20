@@ -1,20 +1,24 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-
-import TickerBar from './Tickerbar';
+import {View, StyleSheet, Linking, TouchableOpacity, Image} from 'react-native';
+import { Container, Content, Card, CardItem, Text} from 'native-base';
+import ColourBars from './colourBars/ColourBars';
 
 class Merch extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {  };
-    }
+
     render() {
         return (
             <View style={styles.container}>
-             <TickerBar/>
-                <View style={styles.main}>
-                <Text style={styles.textStyle}>SELL SOME SHIT HERE!</Text>  
-                </View>
+            <Container style={styles.contentContainer}>
+                <Content>
+                    <View style={{marginBottom: 5}}>
+                        <Text style={styles.textStyle}>FAMILIA STORE</Text>
+                    </View>
+                        <TouchableOpacity onPress={() => Linking.openURL('https://google.com')}>
+                            <Image style={{height: 450, width: 340}} source={require('../assets/StoreLink.png')}>
+                            </Image>
+                        </TouchableOpacity>
+                </Content>
+            </Container>
             </View>
         );
     }
@@ -22,21 +26,31 @@ class Merch extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#15000f',
-      alignSelf: 'stretch',
+        flex: 1,
+        backgroundColor: '#15000f',
     },
-    main: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    image: {
+        width: 340,
+        height: 450
+    },
+    contentContainer: {
+        marginTop: 100,
+        backgroundColor: '#15000f',
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    cardStyle: {
+        height: 450, 
+        width: 340,
     },
     textStyle: {
-        fontSize: 15,
-        fontWeight: '500',
-        color: 'white'
-    },
-  });
-  
+        fontSize: 17,
+        fontWeight: '900',
+        color: 'white',
+        fontFamily: 'YRThree_Light'
+    }
+});
+
 
 export default Merch;

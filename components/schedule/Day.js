@@ -8,7 +8,7 @@ import {
 
 export default function Day(props) {
   return (
-       <View >
+      <View >
         <Text style={styles.dayText}>{props.day}</Text>
       </View>
   )
@@ -22,8 +22,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#15000f',
       },
       dayText: {
-        fontSize: 21,
+        fontSize: 20,
         fontWeight: '300',
-        color: 'white'
+        color: '#faf9f9',
+        fontFamily: 'YRThree_Light'
       }
 })

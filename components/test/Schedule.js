@@ -2,10 +2,10 @@ import React from 'react';
 import {View, StyleSheet, Text, FlatList, ImageBackground} from 'react-native';
 
 import DummyData from '../../assets/dummyData.json';
-import TickerBar from '../Tickerbar';
+
 import EventsBackgroundCard from './EventsBackgroundCard';
-import Day from './Day.js';
-import DaySection from './DaySection.js';
+import Day from '../schedule/Day.js';
+import DaySection from '../schedule/DaySection.js';
 
 
 import { List, ListItem } from 'react-native-elements'

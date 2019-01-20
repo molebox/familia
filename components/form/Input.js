@@ -27,7 +27,7 @@ class Input extends PureComponent {
                 onBlur={this._handleTouch}
                 {...rest}
                 />
-                {error && <FormValidationMessage>{error}</FormValidationMessage>}
+                {!!error && <FormValidationMessage>{error}</FormValidationMessage>}
             </View>
         );
     }

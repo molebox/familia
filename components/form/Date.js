@@ -19,7 +19,7 @@ export default class Date extends Component {
          onConfirm={this._handleChange}
          onCancel={onCancel}
         />
-        {error && <FormValidationMessage>{error}</FormValidationMessage>}
+        {!!error && <FormValidationMessage>{error}</FormValidationMessage>}
     </React.Fragment>
     )
   }

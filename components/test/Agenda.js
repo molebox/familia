@@ -8,7 +8,7 @@ import {Agenda} from 'react-native-calendars';
 import moment from 'moment';
 import { Icon } from 'react-native-elements'
 
-import Month from './Month';
+import Month from '../schedule/Month';
 import Filter from '../Filter';
 
 const skydiving = {key:'skydiving', color: 'red'};

@@ -1,16 +1,21 @@
 {
   "expo": {
-    "name": "skydiving-app",
-    "description": "This project is really great.",
-    "slug": "skydiving-app",
+    "name": "FAMILIA",
+    "description": "Working: Date error fixed",
+    "slug": "familia",
     "privacy": "public",
-    "sdkVersion": "30.0.0",
-    "platforms": ["ios", "android"],
+    "sdkVersion": "31.0.0",
+    "facebookAppId": "315884342379807",
+    "facebookDisplayName": "Familia",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/IPhone-X-Purple.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,7 +26,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hungrybearstudio.familia"
+    },
+    "android": {
+      "package": "com.hungrybearstudio.familia"
     }
   }
 }
