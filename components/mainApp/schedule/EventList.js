@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
 import { Container, Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
-import {f, auth, database} from '../../config/config';
+
 import _ from 'lodash';
 
 import CustomIcon from '../utilities/CustomIcon';
@@ -11,6 +11,7 @@ import Filter from '../Filter';
 import Month from './Month';
 import moment from 'moment';
 import Day from './Day';
+import { database } from '../../../config/config';
 
 
 let today = moment();

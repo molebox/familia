@@ -3,8 +3,9 @@ import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 import CustomIcon from '../utilities/CustomIcon';
 import UserContext from '../utilities/UserContext';
-import LoginPage from '../login/LoginPage';
+
 import Button from '../utilities/Button';
+import LoginPage from './../../login/LoginPage';
 
 export default class UserProfile extends React.Component {
 
@@ -102,4 +103,10 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         alignItems: 'center'
     },
+    checkboxText: {
+        fontSize: 10,
+        fontWeight: '300',
+        color: '#81e6fc',
+        fontFamily: 'YRThree_Light'
+    }
 })

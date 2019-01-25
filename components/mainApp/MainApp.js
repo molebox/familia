@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 import TopBarNav from 'top-bar-nav';
 
-import Share from './Share';
 import Merch from './Merch';
 import EventList from './schedule/EventList';
-import ColourBars from './colourBars/ColourBars';
 import CreateEvent from './listEvent/CreateEvent';
+import ColourBars from './colourBars/ColourBars';
 
 
 const Scene = ({ index }) => (

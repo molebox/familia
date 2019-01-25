@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {f, database, auth} from '../../config/config';
+import {database} from '../../../config/config';
 
 import CustomIcon from '../utilities/CustomIcon';
 import UserProfile from './UserProfile';
@@ -16,24 +16,23 @@ export default class Profile extends React.Component {
 
     onShowProfilePress = () => this.setState({showProfile: !this.state.showProfile});
 
-    componentDidMount() {
-        const that = this;
-        database.ref('users/').once('value', (snapshot) => {
-            const exists = (snapshot.val() !== null);
-            if (exists) {
-                data = snapshot.val();
-            }
+    // componentDidMount() {
+    //     const that = this;
+    //     database.ref('users/').once('value', (snapshot) => {
+    //         const exists = (snapshot.val() !== null);
+    //         if (exists) {
+    //             data = snapshot.val();
+    //         }
 
-            for(var user in data) {
-                const userInfo = data[user];
-                if (userInfo.isAdmin) {
-                    that.setState({isAdmin: true});
-                    console.log('USERDATA: ', userInfo);
-                }            
-            }         
-        })
-      
-    }
+    //         for(var user in data) {
+    //             const userInfo = data[user];
+    //             if (userInfo.isAdmin) {
+    //                 that.setState({isAdmin: true});
+    //                 console.log('USERDATA: ', userInfo);
+    //             }            
+    //         }         
+    //     }) 
+    // }
 
     render() {
         const {showProfile, isAdmin} = this.state;
@@ -42,9 +41,6 @@ export default class Profile extends React.Component {
             return (
                 <Modal 
                 isVisible={this.state.showProfile}
-                // onBackdropPress={() => this.setState({ showProfile: false })}
-                // onSwipe={() => this.setState({ showProfile: false })}
-                // swipeDirection="left"
                 backdropOpacity={1}
                 animationIn="zoomInDown"
                 animationOut="zoomOutUp"
@@ -60,9 +56,6 @@ export default class Profile extends React.Component {
             return (
                 <Modal 
                 isVisible={this.state.showProfile}
-                // onBackdropPress={() => this.setState({ showProfile: false })}
-                // onSwipe={() => this.setState({ showProfile: false })}
-                // swipeDirection="left"
                 backdropOpacity={1}
                 animationIn="zoomInDown"
                 animationOut="zoomOutUp"

@@ -1,12 +1,12 @@
 import React from 'react';
 import {View, StyleSheet, FlatList, SectionList, TouchableOpacity } from 'react-native';
 
-import {f, auth, database} from '../../config/config';
+import {f, auth, database} from '../../../config/config';
 
 
 import CustomIcon from '../utilities/CustomIcon';
 import UserContext from '../utilities/UserContext';
-import LoginPage from '../login/LoginPage';
+import LoginPage from './../../login/LoginPage';
 import CustomButton from '../utilities/Button';
 import Collapsible from 'react-native-collapsible';
 
@@ -41,32 +41,33 @@ export class SectionHeader extends React.Component {
     render() {
         return (
         <View style={styles.monthHeader}>
-            <Month month={this.props.section.title}/>
+            {/* <Month month={this.props.section.title}/> */}
+            <Text style={styles.eventName}>{this.props.section.title}</Text>
         </View>
         );
     }
 }
 
-class EventDescription extends React.Component {
+// class EventDescription extends React.Component {
     
-    render() {
-        return (
-            <View style={styles.descriptionDropdown}>
-                <View >
-                    <Icon name='arrow-up' type="SimpleLineIcons" style={styles.upArrow} />
-                </View>
-                <View style={styles.descriptionContainer}>
-                    <Text style={styles.description}>{this.props.description}</Text>
-                </View>
-                <View style={styles.iconContainer}>
-                {!!this.props.discipline ? (this.props.discipline.map((item, index) => {
-                    return <View key={index} style={styles.iconMargin}><CustomIcon name={item} size={20} style={styles.iconStyle}/></View>
-                })) : null}
-                </View>
-            </View>
-        );
-    }
-}
+//     render() {
+//         return (
+//             <View style={styles.descriptionDropdown}>
+//                 <View >
+//                     <Icon name='arrow-up' type="SimpleLineIcons" style={styles.upArrow} />
+//                 </View>
+//                 <View style={styles.descriptionContainer}>
+//                     <Text style={styles.description}>{this.props.description}</Text>
+//                 </View>
+//                 <View style={styles.iconContainer}>
+//                 {!!this.props.discipline ? (this.props.discipline.map((item, index) => {
+//                     return <View key={index} style={styles.iconMargin}><CustomIcon name={item} size={20} style={styles.iconStyle}/></View>
+//                 })) : null}
+//                 </View>
+//             </View>
+//         );
+//     }
+// }
 
 // Display each date there is an event
  export class SectionListItem extends React.Component {
@@ -96,20 +97,21 @@ class EventDescription extends React.Component {
             body={
                 <View style={styles.sectionListItemContainer}>
                 <View style={styles.eventInfoContainer}>
-                    <View>
+                    {/* <View>
                         <Day day={day}/>
-                    </View>
+                    </View> */}
                         <TouchableOpacity onPress={this.toggleDescription}>
                         <View style={styles.info}>
-                            <Text style={styles.eventName}>{this.props.item.eventName.toUpperCase()}</Text>
+                            {/* <Text style={styles.eventName}>{this.props.item.eventName.toUpperCase()}</Text> */}
                             <Text style={styles.creatorsName}>Coached by {this.props.item.creatorsName}</Text>
+                            <Text style={styles.location}>{this.props.item.creatorsEmail}</Text>
                             <Text style={styles.location}>{this.props.item.location}</Text>
                         </View>
                         </TouchableOpacity>
                 </View>
-                <Collapsible collapsed={this.state.descriptionCollapsed}>
+                {/* <Collapsible collapsed={this.state.descriptionCollapsed}>
                     <EventDescription description={this.props.item.description} discipline={this.props.item.discipline}/>
-                </Collapsible>
+                </Collapsible> */}
             </View>
             }
             right={
@@ -204,6 +206,7 @@ export default class AdminProfile extends React.Component {
                                location: eventObj.location,
                                description: eventObj.description,
                                creatorsName: eventObj.creatorsName,
+                               creatorsEmail: eventObj.creatorsEmail,
                                date: eventObj.date,
                                discipline: eventObj.discipline,
                                }
@@ -265,50 +268,7 @@ export default class AdminProfile extends React.Component {
         }
 
         return (
-
-//  <UserContext.Consumer>
-//                 {context => (
-//                     <Container style={styles.container}>
-//                     <Content>
-//                             <View style={styles.userInfoSection}>
-//                                 <View style={styles.userInfo}>
-//                                     {this.getUsername(context)}
-//                                     <Text style={styles.email}>{context.state.user.email}</Text>
-//                                 </View>
-//                             </View>
-//                             <View style={styles.listSection}>
-//                                 <View style={styles.list}>
-//                                     <SectionList
-//                                     scrollEnabled={false}
-//                                     // refreshing={this.state.refreshing}
-//                                     // onRefresh={this.onRefresh}
-//                                     renderItem={({item, index}) => {
-//                                         return <SectionListItem item={item} index={index}/>
-//                                     }}
-//                                     renderSectionHeader={({section}) => {
-//                                         return <SectionHeader section={section}/>
-//                                     }}
-//                                     sections={this.state.listData}
-//                                     keyExtractor={(item, index) => item + index}
-//                                     />
-//                                 </View>
-//                             </View>
-//                             <View style={styles.closeBtnSection}>
-//                                 <TouchableOpacity style={styles.descriptionContainer} onPress={context.signUserOut}>
-//                                     <View style={styles.textContainer}><Text style={styles.descriptionText}>LOGOUT</Text></View>
-//                                     <View style={styles.iconContainer}><CustomIcon name="Logout" size={30} style={styles.iconStyle}/></View>
-//                                         </TouchableOpacity>
-//                                         {this.checkLogoutStatus(context)}
-//                                         <View style={styles.closeBtn}>
-//                                             <Button onPress={this.props.closeModel} text='Close'/>
-//                                     </View> 
-//                             </View>                     
-//                     </Content>
-//                 </Container>   
-//                 )}     
-//             </UserContext.Consumer>
            
-
         <UserContext.Consumer>
             {context => (
                 <View style={styles.container}>
@@ -406,8 +366,46 @@ const styles = StyleSheet.create({
     iconStyle: {
         color: '#faf9f9',
     },
+    iconMargin: {
+        padding: 5
+    },
     closeBtn: {
         marginVertical: 20,
         alignItems: 'center'
+    },
+    eventName: {
+        fontSize: 15,
+        fontWeight: '300',
+        color: '#81e6fc',
+    },
+    creatorsName: {
+        fontSize: 13,
+        fontWeight: '300',
+        color: '#faf9f9'
+    },
+    location: {
+        fontSize: 12,
+        fontWeight: '300',
+        color: '#898688'
+    },
+    monthHeader: {
+        marginBottom: 15
+    },
+    sectionListItemContainer: {
+        marginTop: 2,
+        marginBottom: 12
+    },
+    eventInfoContainer: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    info: {
+        marginLeft: 35
+    },
+    upArrow: {
+        color: '#81e6fc',
+        fontSize: 20,
+        alignSelf: 'center',
+        padding: 10
     },
 })

@@ -1,16 +1,19 @@
 import React from 'react';
-import {View, StyleSheet, ImageBackground, Alert} from 'react-native';
-import {Form, Item, Input, Label, Text} from 'native-base';
+import {View, StyleSheet, ImageBackground} from 'react-native';
+import {Form, Item, Input, Label} from 'native-base';
 
-import Button from '../../components/utilities/Button';
+
 import { Pages } from 'react-native-pages';
 import Dialog, { DialogContent, SlideAnimation, DialogTitle} from 'react-native-popup-dialog';
 
-import MainApp from '../MainApp';
+import MainApp from '../mainApp/MainApp';
 import { f, auth, database} from '../../config/config';
-import ErrorsAndWarnings from '../utilities/ErrorsAndWarnings';
+import ErrorsAndWarnings from '../mainApp/utilities/ErrorsAndWarnings';
 import Modal from "react-native-modal";
-import UserContext from '../utilities/UserContext';
+import UserContext from '../mainApp/utilities/UserContext';
+import Button from '../mainApp/utilities/Button';
+import AnimatedLogo from '../mainApp/AnimatedLogo';
+import AdminApp from '../adminApp/AdminApp';
 
 class LoginPage extends React.Component {
 
@@ -36,6 +39,7 @@ class LoginPage extends React.Component {
         if(user) {
             // Logged in
             that.setState({loggedIn: true, user});
+            this.checkUserIsAdmin();
             console.log('USER DETAILS: ', user);
         } else {
             // Logged out
@@ -85,6 +89,7 @@ class LoginPage extends React.Component {
             if (user !== undefined) {
                 this.setState({loggedIn: true, loginVisible: null, user: user.user});
             }
+            this.checkUserIsAdmin();
         } catch(error) {
             this.setState({error: error.message, hasError: true, loggedIn: false});
             console.log(error.message);
@@ -94,6 +99,24 @@ class LoginPage extends React.Component {
         this.setState({error: 'Missing email or password', hasError: true});
     }
 }
+
+    checkUserIsAdmin = () => {
+        const that = this;
+        database.ref('users/').once('value', (snapshot) => {
+            const exists = (snapshot.val() !== null);
+            if (exists) {
+                data = snapshot.val();
+            }
+
+            for(var user in data) {
+                const userInfo = data[user];
+                if (userInfo.isAdmin) {
+                    that.setState({isAdmin: true});
+                    console.log('USERDATA: ', userInfo);
+                }            
+            }         
+        });
+    }
 
 //     async loginWithFacebook() {
 //         const {type, token} = await Expo.Facebook.logInWithReadPermissionsAsync(
@@ -125,7 +148,7 @@ loginWithFacebook = async() => {
 
         const user = await response.json();
         this.setState({loggedIn: true, user});
-
+        this.checkUserIsAdmin();
         } else {
         // type === 'cancel'
         }
@@ -154,24 +177,29 @@ loginWithFacebook = async() => {
         });
     }
 
-    render() {
-        const {loggedIn} = this.state;
-        return (
-            <UserContext.Provider value={{state: this.state, signUserOut: this.signUserOut}}>
-            <View style={styles.container}>
-                {!!loggedIn ? (
-                    <MainApp/>
-                ) : (
-            <View style={styles.container}>
+    renderMain = () => {
+        const {loggedIn, isAdmin} = this.state;
+
+        let viewToRender;
+
+        if (!!loggedIn && !!isAdmin) {
+            viewToRender = <AdminApp/>;
+        } else if (!!loggedIn) {
+            viewToRender = <MainApp/>;
+
+        } else {
+            viewToRender = <View style={styles.container}>
                 <ImageBackground style={styles.image} source={require('../../assets/IPhone-X-Purple.png')} resizeMode={'cover'}>
                     <View style={{flex: 4}}></View>
                     <View style={styles.buttonContainer}>
                         <View >
                             <View style={styles.singleButton}>
+                            <AnimatedLogo duration={4000}>
                                 <Button 
                                 text="SIGN UP"
                                 onPress={() => this.setState({signUpVisible: true})}
                                 />
+                            </AnimatedLogo>
 
                                 <Modal 
                                 isVisible={this.state.signUpVisible}
@@ -226,24 +254,31 @@ loginWithFacebook = async() => {
 
                             </View>
                             <View style={styles.singleButton}>
-                                <Button 
-                                text="CONTINUE WITH FACEBOOK"
-                                onPress={this.loginWithFacebook}
-                                />
+                                <AnimatedLogo duration={3000}>
+                                    <Button 
+                                    text="CONTINUE WITH FACEBOOK"
+                                    onPress={this.loginWithFacebook}
+                                    />
+                                </AnimatedLogo>
+                             
                             </View>
                             <View style={styles.singleButton}>
-                                <Button 
-                                text="CONTINUE WITH GOOGLE"
-                                onPress={this.loginWithGoogle}
-                                />
+                                <AnimatedLogo duration={2000}>
+                                    <Button 
+                                    text="CONTINUE WITH GOOGLE"
+                                    onPress={this.loginWithGoogle}
+                                    />
+                                </AnimatedLogo>
                             </View>
                             <View style={styles.singleButton}>
-                                <Button 
-                                isLoginButton={true}
-                                text="LOGIN"
-                                onPress={() => this.setState({loginVisible: true})}
-                                />
-
+                                <AnimatedLogo duration={1500}>
+                                    <Button 
+                                    isLoginButton={true}
+                                    text="LOGIN"
+                                    onPress={() => this.setState({loginVisible: true})}
+                                    />
+                                </AnimatedLogo>
+                       
                                 <Modal 
                                 isVisible={this.state.loginVisible}
                                 onBackdropPress={() => this.setState({ loginVisible: false })}
@@ -292,9 +327,18 @@ loginWithFacebook = async() => {
                     </View>
                 </ImageBackground>
             </View>
-                )}
+        }
 
-        </View>
+        return viewToRender;     
+    }
+
+    render() {
+
+        return (
+            <UserContext.Provider value={{state: this.state, signUserOut: this.signUserOut}}>
+                <View style={styles.container}>
+                    {this.renderMain()}
+                </View>
             </UserContext.Provider>
         
         );
