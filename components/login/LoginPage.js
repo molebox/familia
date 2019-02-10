@@ -35,17 +35,17 @@ class LoginPage extends React.Component {
 
     let that = this;
     // Check if user exists
-    f.auth().onAuthStateChanged((user) => {
-        if(user) {
-            // Logged in
-            that.setState({loggedIn: true, user});
-            this.checkUserIsAdmin();
-            console.log('USER DETAILS: ', user);
-        } else {
-            // Logged out
-            that.setState({loggedIn: false});
-        }
-        });
+    // f.auth().onAuthStateChanged((user) => {
+    //     if(user) {
+    //         // Logged in
+    //         that.setState({loggedIn: true, user});
+    //         this.checkUserIsAdmin();
+    //         console.log('USER DETAILS: ', user);
+    //     } else {
+    //         // Logged out
+    //         that.setState({loggedIn: false});
+    //     }
+    //     });
     }
 
     // Create the new users and put thier details in the database
@@ -88,8 +88,8 @@ class LoginPage extends React.Component {
             let user = await auth.signInWithEmailAndPassword(email, password);
             if (user !== undefined) {
                 this.setState({loggedIn: true, loginVisible: null, user: user.user});
+                this.checkUserIsAdmin(user);
             }
-            this.checkUserIsAdmin();
         } catch(error) {
             this.setState({error: error.message, hasError: true, loggedIn: false});
             console.log(error.message);
@@ -100,22 +100,25 @@ class LoginPage extends React.Component {
     }
 }
 
-    checkUserIsAdmin = () => {
-        const that = this;
-        database.ref('users/').once('value', (snapshot) => {
-            const exists = (snapshot.val() !== null);
-            if (exists) {
-                data = snapshot.val();
-            }
+    checkUserIsAdmin = (user) => {
+        // const that = this;
+        console.log('user: ', user);
+        const currentUser = f.auth().currentUser;
+        console.log('currentUser: ', currentUser);
+        // database.ref('users/').once('value', (snapshot) => {
+        //     const exists = (snapshot.val() !== null);
+        //     if (exists) {
+        //         data = snapshot.val();
+        //     }
 
-            for(var user in data) {
-                const userInfo = data[user];
-                if (userInfo.isAdmin) {
-                    that.setState({isAdmin: true});
-                    console.log('USERDATA: ', userInfo);
-                }            
-            }         
-        });
+        //     for(var user in data) {
+        //         const userInfo = data[user];
+        //         if (userInfo.isAdmin) {
+        //             that.setState({isAdmin: true});
+        //             console.log('USERDATA: ', userInfo);
+        //         }            
+        //     }         
+        // });
     }
 
 //     async loginWithFacebook() {

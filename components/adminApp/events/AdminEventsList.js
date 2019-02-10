@@ -1,16 +1,13 @@
 import React from 'react';
-import {View, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Animated } from 'react-native';
-import { Text, Spinner, CheckBox, ListItem, Body, Icon } from 'native-base';
-import Modal from "react-native-modal";
+import {View, StyleSheet, SafeAreaView} from 'react-native';
+import {Text, Spinner, DeckSwiper, Card, Fab, Button} from 'native-base';
 
 import _ from 'lodash';
+import moment from 'moment';
 
-import { database } from '../../../config/config';
+import {f, database} from '../../../config/config';
 import CustomIcon from '../../mainApp/utilities/CustomIcon';
-import Button from './../../mainApp/utilities/Button';
-
-import { SwipeListView } from 'react-native-swipe-list-view';
-
+import CustomButton from './../../mainApp/utilities/Button';
 
 export default class AdminEventsList extends React.Component {
 
@@ -25,7 +22,8 @@ export default class AdminEventsList extends React.Component {
             acceptChecked: false,
             deleteChecked: false,
             eventSelected: false,
-            descriptionVisible: false
+            descriptionVisible: false,
+            fabActive: false
         };
     }
 
@@ -104,6 +102,44 @@ export default class AdminEventsList extends React.Component {
 		}
     }
 
+    onDelete = (formData) => {
+        const {skySelected, baseSelected, wingSelected, coachSelected, date} = this.state;
+
+        let fullDate = moment(date);
+        const chosenDate = fullDate.format('YYYY-MM-DD');
+
+        const values = {
+            id: formData.id,
+            eventName: formData.eventTitle,
+            date: chosenDate,
+            location: formData.location,
+            creatorsName: formData.organiser,
+            creatorsEmail: formData.email,
+            description: formData.description,
+            discipline: []
+        };
+        console.log('values: ', values);
+
+        if (skySelected) {
+            values.discipline.push('sky02');
+        }
+        if (baseSelected) {
+            values.discipline.push('Base02');
+        }
+        if (wingSelected) {
+            values.discipline.push('Wing02');
+        }
+        if (coachSelected) {
+            values.discipline.push('Coach02');
+        }
+
+        // const userId = f.auth().currentUser.uid;
+        // database.child('tempEvents').child(userId).removeValue();
+        database.ref('/tempEvents/' + formData.id).remove();
+        database.ref('/users/usersEvents/' + formData.id).remove();
+        this.onRefresh();
+    }
+
     onSubmit = (formData) => {
         console.log('data: ', formData);
         const {skySelected, baseSelected, wingSelected, coachSelected, date} = this.state;
@@ -135,20 +171,20 @@ export default class AdminEventsList extends React.Component {
         }
 
         // PUSH DATA TO DATBASE...
-        const newPostKey = f.database().ref().child('events').push().key;
-        //Set user events object
-        const userId = f.auth().currentUser.uid;
-        database.ref("/users/" + userId + "/usersEvents/" + newPostKey).set(values);
+        // const newPostKey = f.database().ref().child('events').push().key;
+        // //Set user events object
+        // const userId = f.auth().currentUser.uid;
+        // database.ref("/users/" + userId + "/usersEvents/" + newPostKey).set(values);
   
-        const updates = {};
-        updates['/events/' + newPostKey] = values;
+        // const updates = {};
+        // updates['/events/' + newPostKey] = values;
 
-        return f.database().ref().update(updates);
+        // return f.database().ref().update(updates);
     }
 
     render() {
 
-        if (!!this.state.loading) {
+        if (!!this.state.loading || !!this.state.refreshing) {
             return (
                 <View style={styles.spinner}>
                     <Spinner color="#81e6fc"/>
@@ -158,91 +194,72 @@ export default class AdminEventsList extends React.Component {
 
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.list}>
+            <View style={styles.list}>
+                <View style={{flex: 1}}>
                     <Text style={styles.title}>Queued Events</Text>
-                    <View>
-                        <SwipeListView
-                        useFlatList
-                        tension={60}
-                        friction={10}
-                        disableRightSwipe={true}
-                        closeOnRowBeginSwipe={true}
-                        directionalDistanceChangeThreshold={1}
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.onRefresh}
-                        data={this.state.listData}
-                        keyExtractor={(item, index) => item + index}
-                        renderItem={({item}) => (                  
-                            <View 
-                            style={this.state.eventSelected ? styles.itemContainerPressed : styles.itemContainer} 
-                            >
-                                <View style={styles.info}>
+                </View>
+                <View style={{flex: 5}}>
+                    <DeckSwiper
+                    ref={(c) => this._deckSwiper = c}
+                    dataSource={this.state.listData}
+                    renderEmpty={() =>
+                        <View style={{ alignSelf: "center" }}>
+                          <Text>Over</Text>
+                        </View>
+                    }
+                    renderItem={item => 
+                    <Card style={styles.itemContainer}>
+                        <View >
+                            <View style={styles.info}>
+                                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
                                     <Text style={styles.eventName}>{item.eventName.toUpperCase()}</Text>
+                                    <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+                                        {!!item.discipline ? (item.discipline.map((discipline, index) => {
+                                            return <View key={index} style={styles.iconMargin}><CustomIcon name={discipline} size={20} style={styles.iconStyle}/></View>
+                                        })) : null}
+                                    </View>  
+                                </View>
+                                
+                                <View style={{flex: 5}}>
                                     <Text style={styles.creatorsName}>Coached by {item.creatorsName}</Text>
                                     <Text style={styles.location}>{item.location}</Text>
                                     <Text style={styles.location}>{item.date}</Text>
-
-                                    <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
-                                        <View style={{marginTop: 10}}>
-                                            <Text style={styles.viewDescription}>VIEW DESCRIPTION</Text>
-                                        </View>
-                                    </TouchableOpacity>
-
-                                    <Modal
-                                    isVisible={this.state.descriptionVisible}
-                                    onBackdropPress={() => this.setState({ descriptionVisible: false })}
-                                    onSwipe={() => this.setState({ descriptionVisible: false })}
-                                    swipeDirection="left"
-                                    backdropOpacity={1}
-                                    animationIn="zoomInDown"
-                                    animationOut="zoomOutUp"
-                                    animationInTiming={1000}
-                                    animationOutTiming={1000}
-                                    backdropTransitionInTiming={1000}
-                                    backdropTransitionOutTiming={1000}
-                                    style={styles.model}
-                                    >
-                                        <View style={styles.textAreaContainer}>
-                                            <View style={{alignItems: 'center'}}>
-                                                <Text style={{color: 'white', fontSize: 20, marginBottom: 10}}>Event Description</Text>
-                                            </View>
-                                            <Text style={styles.description}>{item.description}</Text>
-                                        </View>
-                                    </Modal>
-
-                                </View>
-                                <View style={{flexDirection: 'row'}}>
-                                    {!!item.discipline ? (item.discipline.map((discipline, index) => {
-                                        return <View key={index} style={styles.iconMargin}><CustomIcon name={discipline} size={20} style={styles.iconStyle}/></View>
-                                    })) : null}
+                                    <View style={styles.descriptionContainer}>
+                                        <Text style={styles.description}>{item.description}</Text>
+                                    </View>  
                                 </View>
                                 
-                            </View>                                      
-                        )}
-                        renderHiddenItem={ (data, secId, rowId, rowMap) => (  
-                            <View style={styles.rowBack}>
-                                <TouchableOpacity onPress={() => this.handleDelete(data, `${secId}${rowId}`, rowMap)}><Icon style={styles.removeEvent} type="MaterialIcons" name="remove"/></TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.handleAccept(data)}><Icon style={styles.addEvent} type="MaterialIcons" name="add"/></TouchableOpacity>
-                            </View>
-                        )}
-                        // leftOpenValue={75}
-                        rightOpenValue={-150}
-                        onRowOpen={(rowKey, rowMap) => {
-                            setTimeout(() => {
-                                rowMap[rowKey].closeRow()
-                            }, 2000)
-                        }}
-                        previewRowKey={'1'}
-						previewOpenValue={-150}
-						previewOpenDelay={1000}
-                        />
-                    </View>  
-                </View>     
-                    <View style={styles.confirmButton}>
-                        <Button customBtnStyle={styles.acceptBtnStyle} onPress={() => this.onSubmit} text='CONFIRM'/>
-                    </View> 
+                                <View style={styles.btnContainer}>
+                                    <CustomButton text="DELETE" customBtnStyle={styles.btnStyle} onPress={() => this.onDelete(item)}/>
+                                    <CustomButton text="ACCEPT" customBtnStyle={styles.btnStyle} onPress={() => this.onSubmit(item)}/>
+                                </View>                      
+                            </View>                             
+                        </View>     
+                    </Card>             
+                    }
+                    />
+                </View>
+                <View style={{flex: 1}}>
+                    <Fab
+                    active={this.state.fabActive}
+                    direction="up"
+                    containerStyle={{ }}
+                    style={styles.fabContainer}
+                    position="bottomRight"
+                    onPress={() => this.setState({fabActive: !this.state.fabActive})}
+                    >
+                    <CustomIcon name="Profile" size={50} style={styles.iconStyle}/>
+                    <Button style={styles.logoutContainer}>
+                        <CustomIcon name="Logout" size={20} style={styles.iconStyle}/>
+                    </Button>
+                    </Fab>
+                </View>
+            </View>
+
             </SafeAreaView>
         );
+
+ 
     }
 }
 
@@ -252,33 +269,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#15000f', 
     },
     eventName: {
-        fontSize: 15,
+        fontSize: 20,
         fontWeight: '300',
         fontFamily: 'YRThree_Medium',
         color: '#81e6fc',
     },
     creatorsName: {
-        fontSize: 13,
+        fontSize: 17,
         fontWeight: '300',
         color: '#faf9f9'
     },
     location: {
-        fontSize: 12,
+        fontSize: 15,
         fontWeight: '300',
         color: '#898688'
     },
     list: {
-        flex: 3,
+        flex: 1,
         width: '90%',
-        height: '75%',
+        height: '80%',
         margin: 10,
-        // marginTop: 50
     },
     descriptionContainer: {
         flex: 1,
         flexWrap: 'wrap',
         alignContent: 'center',
-        marginLeft: 35
+        marginTop: 20
     },
     description: {
         fontSize: 15,
@@ -300,6 +316,7 @@ const styles = StyleSheet.create({
     },
     info: {
         alignSelf: 'center',
+        flex: 1
     },
     iconContainer: {
         flex: 1,
@@ -327,62 +344,31 @@ const styles = StyleSheet.create({
         marginTop: 2,
         marginBottom: 12,
         backgroundColor: '#15000f', 
-    },
-    itemContainerPressed: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderWidth: 1.5,
-        borderColor: '#ffc400',
-        borderRadius: 10,
-        padding: 20,
-        marginTop: 2,
-        marginBottom: 12,
-        backgroundColor: '#15000f', 
+        elevation: 3,
     },
     title: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: '300',
         fontFamily: 'YRThree_Medium',
         color: '#faf9f9',
-        marginVertical: 10
+        marginTop: 15
     },
-    confirmButton: {
-        flex: 1,
-        alignItems: 'center',
-        alignContent: 'center',
-        alignSelf: 'center',
-        justifyContent: 'center'
+    btnContainer: {
+        flex: 1, 
+        flexDirection: 'row', 
+        marginTop: 20, 
+        justifyContent: 'space-between'
     },
-    acceptBtnStyle:{
+    btnStyle:{
         marginVertical: 10,
         alignItems: 'center',
         backgroundColor: 'transparent',
         padding: 8,
-        width: 120,
+        width: 90,
         borderRadius: 20,
-        borderColor: '#FFC300',
+        borderColor: '#81e6fc',
         borderWidth: 1,
-    },
-    addEvent: {
-        fontSize: 50,
-        color: '#FFC300',
-    },
-    removeEvent: {
-        fontSize: 50,
-        color: '#581845',
-    },
-    rowBack: {
-        alignItems: 'center',
-        backgroundColor: '#15000f',
-        flex: 1,
-        flexDirection: 'row-reverse',
-        // justifyContent: 'space-between',
-        // paddingLeft: 15,
-      },
-    modal: {
-        borderWidth: 0.5
     },
     textAreaContainer: {
         marginTop: 20,
@@ -393,8 +379,105 @@ const styles = StyleSheet.create({
         padding: 15,
         backgroundColor: '#15000f', 
     },
-
-
+    fabContainer: {
+        borderColor: '#FFC300',
+        borderWidth: 1,
+        backgroundColor: 'transparent'
+    },
+    logoutContainer: {
+        borderColor: '#C70039',
+        borderWidth: 1,
+        backgroundColor: 'transparent',
+        padding: 5
+    }
 });
 
 
+
+       // return (
+        //     <SafeAreaView style={styles.container}>
+        //         <View style={styles.list}>
+        //             <Text style={styles.title}>Queued Events</Text>
+        //             <View>
+        //                 <SwipeListView
+        //                 useFlatList
+        //                 tension={60}
+        //                 friction={10}
+        //                 disableRightSwipe={true}
+        //                 closeOnRowBeginSwipe={true}
+        //                 directionalDistanceChangeThreshold={1}
+        //                 refreshing={this.state.refreshing}
+        //                 onRefresh={this.onRefresh}
+        //                 data={this.state.listData}
+        //                 keyExtractor={(item, index) => item + index}
+        //                 renderItem={({item}) => (                  
+        //                     <View 
+        //                     style={this.state.eventSelected ? styles.itemContainerPressed : styles.itemContainer} 
+        //                     >
+        //                         <View style={styles.info}>
+        //                             <Text style={styles.eventName}>{item.eventName.toUpperCase()}</Text>
+        //                             <Text style={styles.creatorsName}>Coached by {item.creatorsName}</Text>
+        //                             <Text style={styles.location}>{item.location}</Text>
+        //                             <Text style={styles.location}>{item.date}</Text>
+
+        //                             <TouchableOpacity onPress={() => this.setState({descriptionVisible: true})}>
+        //                                 <View style={{marginTop: 10}}>
+        //                                     <Text style={styles.viewDescription}>VIEW DESCRIPTION</Text>
+        //                                 </View>
+        //                             </TouchableOpacity>
+
+        //                             <Modal
+        //                             isVisible={this.state.descriptionVisible}
+        //                             onBackdropPress={() => this.setState({ descriptionVisible: false })}
+        //                             onSwipe={() => this.setState({ descriptionVisible: false })}
+        //                             swipeDirection="left"
+        //                             backdropOpacity={1}
+        //                             animationIn="zoomInDown"
+        //                             animationOut="zoomOutUp"
+        //                             animationInTiming={1000}
+        //                             animationOutTiming={1000}
+        //                             backdropTransitionInTiming={1000}
+        //                             backdropTransitionOutTiming={1000}
+        //                             style={styles.model}
+        //                             >
+        //                                 <View style={styles.textAreaContainer}>
+        //                                     <View style={{alignItems: 'center'}}>
+        //                                         <Text style={{color: 'white', fontSize: 20, marginBottom: 10}}>Event Description</Text>
+        //                                     </View>
+        //                                     <Text style={styles.description}>{item.description}</Text>
+        //                                 </View>
+        //                             </Modal>
+
+        //                         </View>
+        //                         <View style={{flexDirection: 'row'}}>
+        //                             {!!item.discipline ? (item.discipline.map((discipline, index) => {
+        //                                 return <View key={index} style={styles.iconMargin}><CustomIcon name={discipline} size={20} style={styles.iconStyle}/></View>
+        //                             })) : null}
+        //                         </View>
+                                
+        //                     </View>                                      
+        //                 )}
+        //                 renderHiddenItem={ (data, secId, rowId, rowMap) => (  
+        //                     <View style={styles.rowBack}>
+        //                         <TouchableOpacity onPress={() => this.handleDelete(data, `${secId}${rowId}`, rowMap)}><Icon style={styles.removeEvent} type="MaterialIcons" name="remove"/></TouchableOpacity>
+        //                         <TouchableOpacity onPress={() => this.handleAccept(data)}><Icon style={styles.addEvent} type="MaterialIcons" name="add"/></TouchableOpacity>
+        //                     </View>
+        //                 )}
+        //                 // leftOpenValue={75}
+        //                 rightOpenValue={-150}
+        //                 onRowOpen={(rowKey, rowMap) => {
+        //                     setTimeout(() => {
+        //                         rowMap[rowKey].closeRow()
+        //                     }, 2000)
+        //                 }}
+        //                 previewRowKey={'1'}
+		// 				previewOpenValue={-150}
+		// 				previewOpenDelay={1000}
+        //                 />
+        //             </View>  
+        //         </View>     
+        //             <View style={styles.confirmButton}>
+        //                 <Button customBtnStyle={styles.acceptBtnStyle} onPress={() => this.onSubmit} text='CONFIRM'/>
+        //             </View> 
+        //     </SafeAreaView>
+        // );
