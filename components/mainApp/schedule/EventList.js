@@ -1,12 +1,15 @@
 import React from 'react';
-import {View, StyleSheet, SectionList, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, SectionList, TouchableOpacity, SafeAreaView} from 'react-native';
 import { Container, Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
+import Modal from "react-native-modal";
+import {Calendar} from 'react-native-calendars';
 
 import _ from 'lodash';
-
 import CustomIcon from '../utilities/CustomIcon';
-import Filter from '../Filter';
+import CustomDivider from './CustomDivider';
+import IconButton from '../utilities/IconButton';
+import DirectionArrow from '../utilities/DirectionArrow';
 
 import Month from './Month';
 import moment from 'moment';
@@ -110,7 +113,12 @@ export default class EventList extends React.Component {
             filterCollapsed: true,
             listData: [],
             loading: true,
-            refreshing: false
+            refreshing: false,
+            skySelected: false,
+            baseSelected: false,
+            wingSelected: false,
+            coachSelected: false,
+            filterOpen: false
         }
     }
 
@@ -129,6 +137,14 @@ export default class EventList extends React.Component {
         const month = fullDate.format('MMM');   
         return month.toUpperCase();
     }
+
+    setSkydivingState = () => this.setState({ skySelected: !this.state.skySelected, filterCollapsed: false });
+
+    setBaseState = () => this.setState({ baseSelected: !this.state.baseSelected, filterCollapsed: false });
+
+    setWingState = () => this.setState({ wingSelected: !this.state.wingSelected, filterCollapsed: false });
+
+    setCoachState = () => this.setState({ coachSelected: !this.state.coachSelected, filterCollapsed: false });
 
     loadEvents = async() => {
         this.setState({listData: []});
@@ -152,12 +168,17 @@ export default class EventList extends React.Component {
                     getCurrentMonth.month();
                     const currentMonth = getCurrentMonth.format('MMM');
 
+              
+                    
+
                     if (month === currentMonth.toUpperCase()) {
                         title = 'THIS MONTH';  
                     } else {
                         title = month;                         
                     }
-
+                
+                if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
+                    
                     holding.push(
                         {
                            data: [
@@ -174,6 +195,7 @@ export default class EventList extends React.Component {
                            title
                            }    
                        );
+                }
             }
 
             holding.sort((a, b) => a.title < b.title ? -1 : 1);
@@ -210,6 +232,7 @@ export default class EventList extends React.Component {
               };
               sortByMonth(listData);
               that.setState({loading: false, refreshing: false});
+           
 
         }).catch(error => console.log('error: ', error));
     }
@@ -220,6 +243,7 @@ export default class EventList extends React.Component {
     };
 
     render() {
+        const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
 
         if (!!this.state.loading) {
             return (
@@ -230,36 +254,177 @@ export default class EventList extends React.Component {
         }
 
         return (
-            <Container style={styles.container}>
-                <TouchableOpacity style={styles.filterTextContainer} onPress={this.toggleFilter}>
-                    <Text style={styles.filterText}>FILTER</Text>
-                </TouchableOpacity>
-                <Collapsible collapsed={this.state.filterCollapsed}>
-                    <Filter/>
-                </Collapsible>
+            <SafeAreaView style={styles.container}>
+                <View>
+                    <TouchableOpacity style={styles.filterTextContainer} onPress={() => this.setState({filterOpen: true})}>
+                        <Text style={styles.filterText}>FILTER</Text>
+                    </TouchableOpacity>
+
+                        <Modal
+                        isVisible={this.state.filterOpen}
+                        onBackdropPress={() => this.setState({ filterOpen: false })}
+                        backdropOpacity={1}
+                        animationIn="zoomInDown"
+                        animationOut="zoomOutUp"
+                        animationInTiming={1000}
+                        animationOutTiming={1000}
+                        backdropTransitionInTiming={1000}
+                        backdropTransitionOutTiming={1000}
+                        style={styles.model}
+                        >
+                            <View style={filterStyles.filterAreaContainer}>
+                                <View style={{flex: 1}}>
+                                    <View style={filterStyles.center}><Text style={filterStyles.textStyle}>LOCATION</Text></View>
+                                    <CustomDivider/>
+                                </View>  
+                                <View style={{flex: 1}}>
+                                    <View style={filterStyles.center}><Text style={filterStyles.textStyle}>FILTER by</Text></View>
+                                        <View>
+                                            <View style={filterStyles.disciplineContainer}>
+                                                <TouchableOpacity style={styles.iconStyle} onPress={this.setSkydivingState}>
+                                                    <IconButton discipline="sky02" selected={skySelected} disciplineText="skydiving"/>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.iconStyle} onPress={this.setWingState}>
+                                                    <IconButton discipline="Wing02" selected={wingSelected} disciplineText="wingsuit"/>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.iconStyle} onPress={this.setBaseState}>
+                                                    <IconButton discipline="Base02" selected={baseSelected} disciplineText="base"/>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.iconStyle} onPress={this.setCoachState}>
+                                                    <IconButton discipline="Coach02" selected={coachSelected} disciplineText="coaching"/>
+                                                </TouchableOpacity>
+                                            </View>
+                                    </View>
+                                </View>   
+                                <View style={{flex: 3}}>
+                                <View style={filterStyles.center}><Text style={filterStyles.textStyle}>FROM DATE</Text></View>
+                                    <Calendar
+                                    style={filterStyles.calendar}
+                                    markingType={'period'}
+                                    // Initially visible month. Default = Date()
+                                    current={now}
+                                    // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
+                                    minDate={now}
+                                    // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
+                                    maxDate={'2050-01-01'}
+                                    // Handler which gets executed on day press. Default = undefined
+                                    onDayPress={(day) => {console.log('selected day', day)}}
+                                    // Handler which gets executed on day long press. Default = undefined
+                                    onDayLongPress={(day) => {console.log('selected day', day)}}
+                                    // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
+                                    monthFormat={'MMMM yyyy'}
+                                    // Handler which gets executed when visible month changes in calendar. Default = undefined
+                                    onMonthChange={(month) => {console.log('month changed', month)}}
+                                    // Hide month navigation arrows. Default = false
+                                    hideArrows={false}
+                                    // Replace default arrows with custom ones (direction can be 'left' or 'right')
+                                    // renderArrow={(direction) => (<DirectionArrow direction={direction}/>)}
+                                    // Do not show days of other months in month page. Default = false
+                                    hideExtraDays={true}
+                                    // If hideArrows=false and hideExtraDays=false do not switch month when tapping on greyed out
+                                    // day from another month that is visible in calendar page. Default = false
+                                    disableMonthChange={true}
+                                    // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
+                                    firstDay={1}
+                                    // Hide day names. Default = false
+                                    hideDayNames={false}
+                                    // Show week numbers to the left. Default = false
+                                    showWeekNumbers={false}
+                                    // Handler which gets executed when press arrow icon left. It receive a callback can go back month
+                                    onPressArrowLeft={substractMonth => substractMonth()}
+                                    // Handler which gets executed when press arrow icon left. It receive a callback can go next month
+                                    onPressArrowRight={addMonth => addMonth()}
+                                    theme={{
+                                        backgroundColor: '#15000f',
+                                        calendarBackground: '#15000f',
+                                        textSectionTitleColor: 'white',
+                                        monthTextColor: 'white',
+                                        selectedDayBackgroundColor: '#ffc300',
+                                        selectedDayTextColor: '#15000f',
+                                        todayTextColor: '#ffc300',
+                                        arrowColor: '#81e6fc',
+                                        textDayFontFamily: 'YRThree_Medium',
+                                        textMonthFontFamily: 'YRThree_Light',
+                                        textDayHeaderFontFamily: 'YRThree_Medium',
+                                        textDayFontSize: 12,
+                                        dotColor: '#ffc300',
+                                        selectedDotColor: '#ffc300',
+                                      }}
+                                    />
+                                </View>  
+                            </View>
+                        </Modal>
+                </View>
+
+
                 <View style={styles.list}>
-                <SectionList
-                refreshing={this.state.refreshing}
-                onRefresh={this.onRefresh}
-                renderItem={({item, index}) => {
-                    return <SectionListItem item={item} index={index}/>
-                }}
-                renderSectionHeader={({section}) => {
-                    return <SectionHeader section={section}/>
-                }}
-                sections={this.state.listData}
-                keyExtractor={(item, index) => item + index}
-                />
-            </View>
-        </Container>   
+                    <SectionList
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.onRefresh}
+                    renderItem={({item, index}) => {
+                        return <SectionListItem item={item} index={index}/>
+                    }}
+                    renderSectionHeader={({section}) => {
+                        return <SectionHeader section={section}/>
+                    }}
+                    sections={this.state.listData}
+                    keyExtractor={(item, index) => item + index}
+                    />
+                </View>
+        </SafeAreaView>   
     );
     }
 }
 
+const filterStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#15000f',
+    },
+    filterAreaContainer: {
+        flex: 1,
+        marginTop: 20,
+        borderColor: '#81e6fc',
+        borderRadius: 20,
+        borderWidth: 0.5,
+        height: '90%',
+        padding: 5,
+        backgroundColor: '#15000f', 
+    },
+    textStyle: {
+        fontSize: 15,
+        fontWeight: '500',
+        color: 'white',
+        fontFamily: 'YRThree_Medium',
+        marginVertical: 20
+    },
+    center: {
+        alignSelf: 'center',
+        justifyContent: 'center'
+    },
+    disciplineContainer: {
+        backgroundColor: '#15000f', 
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#fbf7f7',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        marginVertical: 15
+    },
+    disciplineText: {
+        alignSelf: 'center',
+    },
+    calendar: {
+        paddingTop: 5,
+        marginHorizontal: 15
+      },
+  });
+
+
 const styles = StyleSheet.create({
     container: {
-    flex: 1,
-    backgroundColor: '#15000f', 
+        flex: 1,
+        backgroundColor: '#15000f', 
     },
     eventName: {
         fontSize: 15,

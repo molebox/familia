@@ -5,7 +5,7 @@ import {
     StyleSheet
   } from 'react-native';
 
-  import {Divider} from 'react-native-elements';
+  import CustomDivider from './CustomDivider';
 
 export default function Month(props) {
   return (
@@ -13,7 +13,7 @@ export default function Month(props) {
       <View style={styles.container}>
         <Text style={styles.month}>{props.month}</Text>
       </View>
-      <Divider style={styles.divider}/>
+      <CustomDivider/>
     </View>
   )
 }
@@ -32,9 +32,4 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         fontFamily: 'YRThree_Medium'
       },
-      divider: {
-        height: 1,
-        opacity: 0.5,
-        backgroundColor: '#fbf7f7',
-      }
 })

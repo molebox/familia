@@ -9,16 +9,16 @@ class Filter extends React.Component {
     }
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.main}>
-                <Text style={styles.textStyle}>SOME FILTER HERE - SKYDIVING - BASE JUMPING ETC...</Text>  
+            <View style={filterStyles.container}>
+                <View style={filterStyles.main}>
+                <Text style={filterStyles.textStyle}>SOME FILTER HERE - SKYDIVING - BASE JUMPING ETC...</Text>  
                 </View>
             </View>
         );
     }
 }
 
-const styles = StyleSheet.create({
+const filterStyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#15000f',
