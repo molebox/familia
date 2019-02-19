@@ -9,7 +9,7 @@ import _ from 'lodash';
 import CustomIcon from '../utilities/CustomIcon';
 import CustomDivider from './CustomDivider';
 import IconButton from '../utilities/IconButton';
-import DirectionArrow from '../utilities/DirectionArrow';
+import Button from '../utilities/Button';
 
 import Month from './Month';
 import moment from 'moment';
@@ -110,7 +110,6 @@ export default class EventList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            filterCollapsed: true,
             listData: [],
             loading: true,
             refreshing: false,
@@ -118,7 +117,10 @@ export default class EventList extends React.Component {
             baseSelected: false,
             wingSelected: false,
             coachSelected: false,
-            filterOpen: false
+            filterOpen: false,
+            selectedDate: '',
+            markedDates: {},
+            date: {}
         }
     }
 
@@ -242,6 +244,34 @@ export default class EventList extends React.Component {
         this.setState({ filterCollapsed: !this.state.filterCollapsed });
     };
 
+    getSelectedDay = (day) => {
+        // selected: true, endingDay: true, color: '#ffc300', textColor: 'white'
+        console.log('selected day', day);
+        this.setState({
+            selectedDate: day.dateString,
+            markedDates: {
+                startingDay: true,
+                selected: true,
+                color: '#ffc300',
+                textColor: 'white'
+            }
+        });
+    }
+
+    setMarkedDates = (key) => {
+        let markedDates = {};
+        if (typeof this.state.markedDates[key] !== 'undefined') {
+          markedDates = {[key]: {selected: !this.state.markedDates[key].selected}};
+        } else {
+          markedDates = {[key]: {selected: true, startingDay: true}};
+        }
+    
+        this.setState((prevState) => {
+          return {...prevState, markedDates};
+        });
+        console.log(markedDates);
+      }
+
     render() {
         const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
 
@@ -297,61 +327,73 @@ export default class EventList extends React.Component {
                                     </View>
                                 </View>   
                                 <View style={{flex: 3}}>
-                                <View style={filterStyles.center}><Text style={filterStyles.textStyle}>FROM DATE</Text></View>
-                                    <Calendar
-                                    style={filterStyles.calendar}
-                                    markingType={'period'}
-                                    // Initially visible month. Default = Date()
-                                    current={now}
-                                    // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                                    minDate={now}
-                                    // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
-                                    maxDate={'2050-01-01'}
-                                    // Handler which gets executed on day press. Default = undefined
-                                    onDayPress={(day) => {console.log('selected day', day)}}
-                                    // Handler which gets executed on day long press. Default = undefined
-                                    onDayLongPress={(day) => {console.log('selected day', day)}}
-                                    // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-                                    monthFormat={'MMMM yyyy'}
-                                    // Handler which gets executed when visible month changes in calendar. Default = undefined
-                                    onMonthChange={(month) => {console.log('month changed', month)}}
-                                    // Hide month navigation arrows. Default = false
-                                    hideArrows={false}
-                                    // Replace default arrows with custom ones (direction can be 'left' or 'right')
-                                    // renderArrow={(direction) => (<DirectionArrow direction={direction}/>)}
-                                    // Do not show days of other months in month page. Default = false
-                                    hideExtraDays={true}
-                                    // If hideArrows=false and hideExtraDays=false do not switch month when tapping on greyed out
-                                    // day from another month that is visible in calendar page. Default = false
-                                    disableMonthChange={true}
-                                    // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
-                                    firstDay={1}
-                                    // Hide day names. Default = false
-                                    hideDayNames={false}
-                                    // Show week numbers to the left. Default = false
-                                    showWeekNumbers={false}
-                                    // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-                                    onPressArrowLeft={substractMonth => substractMonth()}
-                                    // Handler which gets executed when press arrow icon left. It receive a callback can go next month
-                                    onPressArrowRight={addMonth => addMonth()}
-                                    theme={{
-                                        backgroundColor: '#15000f',
-                                        calendarBackground: '#15000f',
-                                        textSectionTitleColor: 'white',
-                                        monthTextColor: 'white',
-                                        selectedDayBackgroundColor: '#ffc300',
-                                        selectedDayTextColor: '#15000f',
-                                        todayTextColor: '#ffc300',
-                                        arrowColor: '#81e6fc',
-                                        textDayFontFamily: 'YRThree_Medium',
-                                        textMonthFontFamily: 'YRThree_Light',
-                                        textDayHeaderFontFamily: 'YRThree_Medium',
-                                        textDayFontSize: 12,
-                                        dotColor: '#ffc300',
-                                        selectedDotColor: '#ffc300',
-                                      }}
-                                    />
+                                    <View style={filterStyles.center}><Text style={filterStyles.textStyle}>FROM DATE</Text></View>
+                                        <Calendar
+                                        style={filterStyles.calendar}
+                                        // markingType={'period'}
+                                        // markedDates={
+                                        //     {'2019-02-20': {textColor:  '#ffc300'},
+                                        //     '2019-02-22': {startingDay: true, color:  '#ffc300'},
+                                        //     '2019-02-23': {selected: true, endingDay: true, color: '#ffc300', textColor: 'white'}
+                                        //     }}
+                                        // Initially visible month. Default = Date()
+                                        current={now}
+                                        // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
+                                        minDate={now}
+                                        // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
+                                        maxDate={'2030-01-01'}
+                                        // Handler which gets executed on day press. Default = undefined
+                                        markingType={'multi-dot'}
+                                        onDayPress={(day) => this.setMarkedDates(day.dateString)}
+                                        markedDates={this.state.markedDates}
+                                        // Handler which gets executed on day long press. Default = undefined
+                                        onDayLongPress={(day) => {console.log('selected day', day)}}
+                                        // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
+                                        monthFormat={'MMMM yyyy'}
+                                        // Handler which gets executed when visible month changes in calendar. Default = undefined
+                                        onMonthChange={(month) => {console.log('month changed', month)}}
+                                        // Hide month navigation arrows. Default = false
+                                        hideArrows={false}
+                                        // Replace default arrows with custom ones (direction can be 'left' or 'right')
+                                        // renderArrow={(direction) => (<DirectionArrow direction={direction}/>)}
+                                        // Do not show days of other months in month page. Default = false
+                                        hideExtraDays={true}
+                                        // If hideArrows=false and hideExtraDays=false do not switch month when tapping on greyed out
+                                        // day from another month that is visible in calendar page. Default = false
+                                        disableMonthChange={true}
+                                        // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
+                                        firstDay={1}
+                                        // Hide day names. Default = false
+                                        hideDayNames={false}
+                                        // Show week numbers to the left. Default = false
+                                        showWeekNumbers={false}
+                                        // Handler which gets executed when press arrow icon left. It receive a callback can go back month
+                                        onPressArrowLeft={substractMonth => substractMonth()}
+                                        // Handler which gets executed when press arrow icon left. It receive a callback can go next month
+                                        onPressArrowRight={addMonth => addMonth()}
+                                        theme={{
+                                            // backgroundColor: '#15000f',
+                                            calendarBackground: '#15000f',
+                                            textSectionTitleColor: 'white',
+                                            monthTextColor: 'white',
+                                            selectedDayBackgroundColor: '#ffc300',
+                                            selectedDayTextColor: '#15000f',
+                                            todayTextColor: '#ff5733',
+                                            dayTextColor: 'white',
+                                            textDisabledColor: 'grey',
+                                            arrowColor: '#81e6fc',
+                                            textDayFontFamily: 'YRThree_Medium',
+                                            textMonthFontFamily: 'YRThree_Light',
+                                            textDayHeaderFontFamily: 'YRThree_Medium',
+                                            textDayFontSize: 12,
+                                            dotColor: '#ffc300',
+                                            selectedDotColor: '#ffc300',
+                                        }}
+                                        />
                                 </View>  
+                                <View style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}}>
+                                    <Button onPress={() => this.setState({filterOpen: false})} text="CLOSE" />
+                                </View>
                             </View>
                         </Modal>
                 </View>
@@ -418,6 +460,13 @@ const filterStyles = StyleSheet.create({
         paddingTop: 5,
         marginHorizontal: 15
       },
+    signUpBtn: {
+        flex: 1,
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+    },
   });
 
 

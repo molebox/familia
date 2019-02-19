@@ -1,8 +1,9 @@
 import React from 'react';
-import {View, AppLoading, ActivityIndicator} from 'react-native';
+import {View, ActivityIndicator} from 'react-native';
 
 import * as firebase from 'firebase';
-import * as Expo from 'expo';
+// import * as Expo from 'expo';
+import * as Font from 'expo-font';
 import LoginPage from './components/login/LoginPage';
 
 export default class App extends React.Component {
@@ -19,7 +20,7 @@ export default class App extends React.Component {
   }
 
   async componentDidMount() {
-    await Expo.Font.loadAsync({
+    await Font.loadAsync({
       'YRThree_Light': require('./assets/fonts/YRThree_Light.ttf'),
       'YRThree_Medium': require('./assets/fonts/YRThree_Medium.ttf'),
       'Roboto': require('native-base/Fonts/Roboto.ttf'),

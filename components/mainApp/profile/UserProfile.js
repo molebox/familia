@@ -5,21 +5,35 @@ import CustomIcon from '../utilities/CustomIcon';
 import UserContext from '../utilities/UserContext';
 
 import Button from '../utilities/Button';
-import LoginPage from './../../login/LoginPage';
+
+import {auth} from '../../../config/config';
 
 export default class UserProfile extends React.Component {
 
+    state= {
+        error: '',
+        hasError: false
+    };
+
     getUsername = (context) => {
         console.log('CONTEXT: ', context);
-        if (!!context.state.user.displayName) return <Text style={styles.username}>{context.state.user.displayName}</Text>;
-        if (!!context.state.user.name) return <Text style={styles.username}>{context.state.user.name}</Text>;
+        if (!!context.user.displayName) return <Text style={styles.username}>{context.user.displayName}</Text>;
+        if (!!context.user.name) return <Text style={styles.username}>{context.user.name}</Text>;
         return <Text style={styles.username}>No name found</Text>;
     }
 
-    checkLogoutStatus = (context) => {
-        if (context.state.loggedIn === false) return <LoginPage/>;
-    }
+    // checkLogoutStatus = (context) => {
+    //     if (context.state.loggedIn === false) return <LoginPage/>;
+    // }
 
+    signUserOut = () => {
+        auth.signOut()
+        .then(() => {
+            console.log('Logged out...');
+        }).catch((error) => {
+            this.setState({error: error.message, hasError: true});
+        });
+    }
 
     render() {
 
@@ -31,17 +45,17 @@ export default class UserProfile extends React.Component {
                     <View style={styles.container}>
                         <View style={styles.userInfo}>
                             {this.getUsername(context)}
-                            <Text style={styles.email}>{context.state.user.email}</Text>
+                            <Text style={styles.email}>{context.user.email}</Text>
                         </View>
                         <TouchableOpacity style={styles.descriptionContainer}>
                             <View style={styles.textContainer}><Text style={styles.descriptionText}>EDIT/DELETE MY EVENT</Text></View>
                             <View style={styles.iconContainer}><CustomIcon name="edit" size={30} style={styles.iconStyle}/></View>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.descriptionContainer} onPress={context.signUserOut}>
+                        <TouchableOpacity style={styles.descriptionContainer} onPress={this.signUserOut}>
                             <View style={styles.textContainer}><Text style={styles.descriptionText}>LOGOUT</Text></View>
                             <View style={styles.iconContainer}><CustomIcon name="Logout" size={30} style={styles.iconStyle}/></View>
                         </TouchableOpacity>
-                        {this.checkLogoutStatus(context)}
+                        {/* {this.checkLogoutStatus(context)} */}
                         <View style={styles.closeBtn}>
                             <Button onPress={this.props.closeModel} text='Close'/>
                         </View>

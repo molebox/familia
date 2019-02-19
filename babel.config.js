@@ -8,7 +8,8 @@ module.exports = function(api) {
                 {
                   "legacy": true
                 }
-              ]
+              ],
+              '@babel/plugin-transform-runtime'
         ]
     };
 };
