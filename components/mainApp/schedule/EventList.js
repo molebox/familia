@@ -4,6 +4,7 @@ import { Container, Text, Icon, Spinner } from 'native-base';
 import Collapsible from 'react-native-collapsible';
 import Modal from "react-native-modal";
 import {Calendar} from 'react-native-calendars';
+import DateRangePicker from './DateRangePicker';
 
 import _ from 'lodash';
 import CustomIcon from '../utilities/CustomIcon';
@@ -13,7 +14,10 @@ import Button from '../utilities/Button';
 
 import Month from './Month';
 import moment from 'moment';
+import { extendMoment } from 'moment-range';
+const extendedMoment = extendMoment(moment);
 import Day from './Day';
+import {compare} from '../utilities/Helpers';
 import { database } from '../../../config/config';
 
 
@@ -118,9 +122,7 @@ export default class EventList extends React.Component {
             wingSelected: false,
             coachSelected: false,
             filterOpen: false,
-            selectedDate: '',
-            markedDates: {},
-            date: {}
+            selectedDates: []
         }
     }
 
@@ -129,8 +131,13 @@ export default class EventList extends React.Component {
     }
 
     onRefresh = () => {
-        this.setState({refreshing: true})
+        this.setState({refreshing: true});
         this.loadEvents();
+    }
+
+    onFilter = () => {
+        // this.setState({refreshing: true});
+        this.filterSearch();
     }
     
     formatDateToMonth(date) {
@@ -169,9 +176,6 @@ export default class EventList extends React.Component {
 
                     getCurrentMonth.month();
                     const currentMonth = getCurrentMonth.format('MMM');
-
-              
-                    
 
                     if (month === currentMonth.toUpperCase()) {
                         title = 'THIS MONTH';  
@@ -244,36 +248,167 @@ export default class EventList extends React.Component {
         this.setState({ filterCollapsed: !this.state.filterCollapsed });
     };
 
-    getSelectedDay = (day) => {
-        // selected: true, endingDay: true, color: '#ffc300', textColor: 'white'
-        console.log('selected day', day);
-        this.setState({
-            selectedDate: day.dateString,
-            markedDates: {
-                startingDay: true,
-                selected: true,
-                color: '#ffc300',
-                textColor: 'white'
+    getSelectedDates = (fromDate, toDate) => this.setState({selectedDates: [fromDate, toDate]});
+    
+
+    filterSearch = async() => {
+        const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates} = this.state;
+        const range = extendedMoment.range(selectedDates[0], selectedDates[1])
+
+        const discipline = [];
+
+        if (skySelected) {
+            discipline.push('sky02');
+        }
+        if (baseSelected) {
+            discipline.push('Base02');
+        }
+        if (wingSelected) {
+            discipline.push('Wing02');
+        }
+        if (coachSelected) {
+            discipline.push('Coach02');
+        }
+
+        this.setState({listData: []});
+        const that = this;
+
+        if (_.isEmpty(selectedDates) && _.isEmpty(discipline)) {
+           this.onRefresh();
+        }
+
+        database.ref('events').once('value').then((snapshot) => {
+            const exists = (snapshot.val() !== null);
+            if (exists) {
+                data = snapshot.val();
             }
-        });
+            const listData = that.state.listData;
+            const holding = [];
+
+            for(var event in data) {
+                const eventObj = data[event]; 
+                const eventsDate = extendedMoment(eventObj.date);
+                const month = this.formatDateToMonth(eventObj.date);   
+                let title;   
+
+                getCurrentMonth.month();
+                const currentMonth = getCurrentMonth.format('MMM');
+
+                if (month === currentMonth.toUpperCase()) {
+                    title = 'THIS MONTH';  
+                } else {
+                    title = month;                         
+                }
+               
+                // if the selected disciplines are a match
+                if (_.isEqual(eventObj.discipline, discipline)) {
+                    if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
+                    
+                        holding.push(
+                            {
+                               data: [
+                                   {
+                                   id: event,
+                                   eventName: eventObj.eventName,
+                                   location: eventObj.location,
+                                   description: eventObj.description,
+                                   creatorsName: eventObj.creatorsName,
+                                   date: eventObj.date,
+                                   discipline: eventObj.discipline,
+                                   }
+                               ],
+                               title
+                               }    
+                           );
+                    }
+                    console.log('DISCIPLINE FILTER: ', eventObj);
+                // if the selected dates are a match and the disciplines are a match
+                } else if (selectedDates && eventsDate.within(range) && _.isEqual(eventObj.discipline, discipline)) {
+                    if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
+                    
+                        holding.push(
+                            {
+                               data: [
+                                   {
+                                   id: event,
+                                   eventName: eventObj.eventName,
+                                   location: eventObj.location,
+                                   description: eventObj.description,
+                                   creatorsName: eventObj.creatorsName,
+                                   date: eventObj.date,
+                                   discipline: eventObj.discipline,
+                                   }
+                               ],
+                               title
+                               }    
+                           );
+                    }
+                    console.log('DISCIPLINE & DATES FILTER: ', eventObj);
+                // if only the selected dates are a match
+                } else if (selectedDates && eventsDate.within(range)) {
+                    if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
+                    
+                        holding.push(
+                            {
+                               data: [
+                                   {
+                                   id: event,
+                                   eventName: eventObj.eventName,
+                                   location: eventObj.location,
+                                   description: eventObj.description,
+                                   creatorsName: eventObj.creatorsName,
+                                   date: eventObj.date,
+                                   discipline: eventObj.discipline,
+                                   }
+                               ],
+                               title
+                               }    
+                           );
+                    }
+                    console.log('DATES FILTER: ', eventObj);
+                } 
+            }
+
+            holding.sort((a, b) => a.title < b.title ? -1 : 1);
+    
+               const groupNames = Array.from(new Set(holding.map(k  => k.title)));
+    
+               let groups = {};
+    
+               groupNames.forEach(k => {
+                groups[k] = [];
+                });
+    
+                holding.forEach(k => {
+                const month = k.title;
+              groups[month].push(k.data[0]);
+            });
+
+            groupNames.map((name) => {
+                let monthInfo = {title: '', data: []};
+                for(let key in groups) {
+                    if (name === key) {
+                        monthInfo.title = name
+                        monthInfo.data = groups[key];
+                        listData.push(monthInfo);
+                    }
+                }
+            });
+
+            function sortByMonth(arr) {             
+                arr.sort(function(a, b){
+                    return monthOrder.indexOf(a.title)
+                         - monthOrder.indexOf(b.title);
+                });
+              };
+              sortByMonth(listData);
+              that.setState({loading: false, refreshing: false, filterOpen: false});
+
+          }).catch(error => console.log('error: ', error));
     }
 
-    setMarkedDates = (key) => {
-        let markedDates = {};
-        if (typeof this.state.markedDates[key] !== 'undefined') {
-          markedDates = {[key]: {selected: !this.state.markedDates[key].selected}};
-        } else {
-          markedDates = {[key]: {selected: true, startingDay: true}};
-        }
-    
-        this.setState((prevState) => {
-          return {...prevState, markedDates};
-        });
-        console.log(markedDates);
-      }
-
     render() {
-        const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
+        const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates} = this.state;
 
         if (!!this.state.loading) {
             return (
@@ -305,6 +440,7 @@ export default class EventList extends React.Component {
                             <View style={filterStyles.filterAreaContainer}>
                                 <View style={{flex: 1}}>
                                     <View style={filterStyles.center}><Text style={filterStyles.textStyle}>LOCATION</Text></View>
+                                    <View style={filterStyles.center}><Text style={filterStyles.underConstruction}>under construction</Text></View>
                                     <CustomDivider/>
                                 </View>  
                                 <View style={{flex: 1}}>
@@ -328,51 +464,12 @@ export default class EventList extends React.Component {
                                 </View>   
                                 <View style={{flex: 3}}>
                                     <View style={filterStyles.center}><Text style={filterStyles.textStyle}>FROM DATE</Text></View>
-                                        <Calendar
-                                        style={filterStyles.calendar}
-                                        // markingType={'period'}
-                                        // markedDates={
-                                        //     {'2019-02-20': {textColor:  '#ffc300'},
-                                        //     '2019-02-22': {startingDay: true, color:  '#ffc300'},
-                                        //     '2019-02-23': {selected: true, endingDay: true, color: '#ffc300', textColor: 'white'}
-                                        //     }}
-                                        // Initially visible month. Default = Date()
-                                        current={now}
-                                        // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-                                        minDate={now}
-                                        // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
-                                        maxDate={'2030-01-01'}
-                                        // Handler which gets executed on day press. Default = undefined
-                                        markingType={'multi-dot'}
-                                        onDayPress={(day) => this.setMarkedDates(day.dateString)}
-                                        markedDates={this.state.markedDates}
-                                        // Handler which gets executed on day long press. Default = undefined
-                                        onDayLongPress={(day) => {console.log('selected day', day)}}
-                                        // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-                                        monthFormat={'MMMM yyyy'}
-                                        // Handler which gets executed when visible month changes in calendar. Default = undefined
-                                        onMonthChange={(month) => {console.log('month changed', month)}}
-                                        // Hide month navigation arrows. Default = false
-                                        hideArrows={false}
-                                        // Replace default arrows with custom ones (direction can be 'left' or 'right')
-                                        // renderArrow={(direction) => (<DirectionArrow direction={direction}/>)}
-                                        // Do not show days of other months in month page. Default = false
-                                        hideExtraDays={true}
-                                        // If hideArrows=false and hideExtraDays=false do not switch month when tapping on greyed out
-                                        // day from another month that is visible in calendar page. Default = false
-                                        disableMonthChange={true}
-                                        // If firstDay=1 week starts from Monday. Note that dayNames and dayNamesShort should still start from Sunday.
-                                        firstDay={1}
-                                        // Hide day names. Default = false
-                                        hideDayNames={false}
-                                        // Show week numbers to the left. Default = false
-                                        showWeekNumbers={false}
-                                        // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-                                        onPressArrowLeft={substractMonth => substractMonth()}
-                                        // Handler which gets executed when press arrow icon left. It receive a callback can go next month
-                                        onPressArrowRight={addMonth => addMonth()}
-                                        theme={{
-                                            // backgroundColor: '#15000f',
+                                        <DateRangePicker
+                                        initialRange={[now, now]}
+                                        onSuccess={(s, e) => this.getSelectedDates(s,e)}
+                                        theme={{ 
+                                            markColor: '#ffc300', 
+                                            markTextColor: '#15000f', 
                                             calendarBackground: '#15000f',
                                             textSectionTitleColor: 'white',
                                             monthTextColor: 'white',
@@ -386,18 +483,14 @@ export default class EventList extends React.Component {
                                             textMonthFontFamily: 'YRThree_Light',
                                             textDayHeaderFontFamily: 'YRThree_Medium',
                                             textDayFontSize: 12,
-                                            dotColor: '#ffc300',
-                                            selectedDotColor: '#ffc300',
-                                        }}
-                                        />
+                                            }}/>
                                 </View>  
                                 <View style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}}>
-                                    <Button onPress={() => this.setState({filterOpen: false})} text="CLOSE" />
+                                    <Button onPress={this.onFilter} text="CLOSE" />
                                 </View>
                             </View>
                         </Modal>
                 </View>
-
 
                 <View style={styles.list}>
                     <SectionList
@@ -437,6 +530,13 @@ const filterStyles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '500',
         color: 'white',
+        fontFamily: 'YRThree_Medium',
+        marginVertical: 20
+    },
+    underConstruction: {
+        fontSize: 15,
+        fontWeight: '500',
+        color: '#ffc300',
         fontFamily: 'YRThree_Medium',
         marginVertical: 20
     },
@@ -558,5 +658,3 @@ const styles = StyleSheet.create({
     }
 
 });
-
-

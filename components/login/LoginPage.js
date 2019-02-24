@@ -35,17 +35,17 @@ class LoginPage extends React.Component {
 
     let that = this;
     // Check if user exists
-    // f.auth().onAuthStateChanged((user) => {
-    //     if(user) {
-    //         // Logged in
-    //         that.setState({loggedIn: true, user});
-    //         this.checkUserIsAdmin();
-    //         console.log('USER DETAILS: ', user);
-    //     } else {
-    //         // Logged out
-    //         that.setState({loggedIn: false});
-    //     }
-    //     });
+    f.auth().onAuthStateChanged((user) => {
+        if(user) {
+            // Logged in
+            that.setState({loggedIn: true, user});
+            this.checkUserIsAdmin();
+            console.log('USER DETAILS: ', user);
+        } else {
+            // Logged out
+            that.setState({loggedIn: false});
+        }
+        });
     }
 
     // Create the new users and put thier details in the database
