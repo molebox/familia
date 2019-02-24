@@ -122,7 +122,8 @@ export default class EventList extends React.Component {
             wingSelected: false,
             coachSelected: false,
             filterOpen: false,
-            selectedDates: []
+            selectedDates: [],
+            filterApplied: false
         }
     }
 
@@ -147,13 +148,13 @@ export default class EventList extends React.Component {
         return month.toUpperCase();
     }
 
-    setSkydivingState = () => this.setState({ skySelected: !this.state.skySelected, filterCollapsed: false });
+    setSkydivingState = () => this.setState({ skySelected: !this.state.skySelected, filterCollapsed: false, filterApplied: true});
 
-    setBaseState = () => this.setState({ baseSelected: !this.state.baseSelected, filterCollapsed: false });
+    setBaseState = () => this.setState({ baseSelected: !this.state.baseSelected, filterCollapsed: false, filterApplied: true});
 
-    setWingState = () => this.setState({ wingSelected: !this.state.wingSelected, filterCollapsed: false });
+    setWingState = () => this.setState({ wingSelected: !this.state.wingSelected, filterCollapsed: false, filterApplied: true});
 
-    setCoachState = () => this.setState({ coachSelected: !this.state.coachSelected, filterCollapsed: false });
+    setCoachState = () => this.setState({ coachSelected: !this.state.coachSelected, filterCollapsed: false, filterApplied: true});
 
     loadEvents = async() => {
         this.setState({listData: []});
@@ -248,32 +249,33 @@ export default class EventList extends React.Component {
         this.setState({ filterCollapsed: !this.state.filterCollapsed });
     };
 
-    getSelectedDates = (fromDate, toDate) => this.setState({selectedDates: [fromDate, toDate]});
+    getSelectedDates = (fromDate, toDate) => this.setState({selectedDates: [fromDate, toDate], filterApplied: true});
     
 
     filterSearch = async() => {
         const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates} = this.state;
-        const range = extendedMoment.range(selectedDates[0], selectedDates[1])
 
-        const discipline = [];
+        console.log('selectedDates: ', selectedDates);
+        const selectedDiscipline = [];
 
         if (skySelected) {
-            discipline.push('sky02');
+            selectedDiscipline.push('sky02');
         }
         if (baseSelected) {
-            discipline.push('Base02');
+            selectedDiscipline.push('Base02');
         }
         if (wingSelected) {
-            discipline.push('Wing02');
+            selectedDiscipline.push('Wing02');
         }
         if (coachSelected) {
-            discipline.push('Coach02');
+            selectedDiscipline.push('Coach02');
         }
 
         this.setState({listData: []});
         const that = this;
 
-        if (_.isEmpty(selectedDates) && _.isEmpty(discipline)) {
+        if (_.isEmpty(selectedDates) && _.isEmpty(selectedDiscipline)) {
+            this.setState({filterApplied: false});
            this.onRefresh();
         }
 
@@ -289,7 +291,10 @@ export default class EventList extends React.Component {
                 const eventObj = data[event]; 
                 const eventsDate = extendedMoment(eventObj.date);
                 const month = this.formatDateToMonth(eventObj.date);   
+                const range = extendedMoment.range(selectedDates[0], selectedDates[1])
                 let title;   
+
+                console.log('event object: ', event);
 
                 getCurrentMonth.month();
                 const currentMonth = getCurrentMonth.format('MMM');
@@ -299,10 +304,10 @@ export default class EventList extends React.Component {
                 } else {
                     title = month;                         
                 }
-               
-                // if the selected disciplines are a match
-                if (_.isEqual(eventObj.discipline, discipline)) {
-                    if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
+
+                if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
+                    // if the selected disciplines are a match
+                     if (_.isEqual(eventObj.discipline, selectedDiscipline)) {
                     
                         holding.push(
                             {
@@ -319,55 +324,31 @@ export default class EventList extends React.Component {
                                ],
                                title
                                }    
-                           );
-                    }
+                           );                   
                     console.log('DISCIPLINE FILTER: ', eventObj);
-                // if the selected dates are a match and the disciplines are a match
-                } else if (selectedDates && eventsDate.within(range) && _.isEqual(eventObj.discipline, discipline)) {
-                    if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
                     
-                        holding.push(
-                            {
-                               data: [
-                                   {
-                                   id: event,
-                                   eventName: eventObj.eventName,
-                                   location: eventObj.location,
-                                   description: eventObj.description,
-                                   creatorsName: eventObj.creatorsName,
-                                   date: eventObj.date,
-                                   discipline: eventObj.discipline,
-                                   }
-                               ],
-                               title
-                               }    
-                           );
-                    }
-                    console.log('DISCIPLINE & DATES FILTER: ', eventObj);
-                // if only the selected dates are a match
-                } else if (selectedDates && eventsDate.within(range)) {
-                    if (moment(eventObj.date).isAfter(now, 'month') || moment(eventObj.date).isSame(now, 'month')) {
-                    
-                        holding.push(
-                            {
-                               data: [
-                                   {
-                                   id: event,
-                                   eventName: eventObj.eventName,
-                                   location: eventObj.location,
-                                   description: eventObj.description,
-                                   creatorsName: eventObj.creatorsName,
-                                   date: eventObj.date,
-                                   discipline: eventObj.discipline,
-                                   }
-                               ],
-                               title
-                               }    
-                           );
-                    }
-                    console.log('DATES FILTER: ', eventObj);
-                } 
+                // if the selected dates are a match
+                } else if (!_.isEmpty(selectedDates) && eventsDate.within(range)) {
+                    holding.push(
+                        {
+                           data: [
+                               {
+                               id: event,
+                               eventName: eventObj.eventName,
+                               location: eventObj.location,
+                               description: eventObj.description,
+                               creatorsName: eventObj.creatorsName,
+                               date: eventObj.date,
+                               discipline: eventObj.discipline,
+                               }
+                           ],
+                           title
+                           }    
+                       );
+                       console.log('DATES FILTER: ', eventObj);  
+                }                 
             }
+        }
 
             holding.sort((a, b) => a.title < b.title ? -1 : 1);
     
@@ -402,13 +383,23 @@ export default class EventList extends React.Component {
                 });
               };
               sortByMonth(listData);
-              that.setState({loading: false, refreshing: false, filterOpen: false});
+              that.setState({
+                  loading: false, 
+                  refreshing: false, 
+                  filterOpen: false, 
+                  selectedDates: [], 
+                  filterApplied: true,
+                  skySelected: false, 
+                  baseSelected: false, 
+                  wingSelected: false, 
+                  coachSelected: false
+                });
 
           }).catch(error => console.log('error: ', error));
     }
 
     render() {
-        const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates} = this.state;
+        const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates, filterApplied} = this.state;
 
         if (!!this.state.loading) {
             return (
@@ -486,7 +477,7 @@ export default class EventList extends React.Component {
                                             }}/>
                                 </View>  
                                 <View style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}}>
-                                    <Button onPress={this.onFilter} text="CLOSE" />
+                                    <Button onPress={this.onFilter} text={this.state.filterApplied ? "FILTER" : "CLOSE"} />
                                 </View>
                             </View>
                         </Modal>
