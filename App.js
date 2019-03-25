@@ -2,7 +2,6 @@ import React from 'react';
 import {View, ActivityIndicator} from 'react-native';
 
 import * as firebase from 'firebase';
-// import * as Expo from 'expo';
 import * as Font from 'expo-font';
 import LoginPage from './components/login/LoginPage';
 

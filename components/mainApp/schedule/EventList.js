@@ -399,7 +399,7 @@ export default class EventList extends React.Component {
     }
 
     render() {
-        const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates, filterApplied} = this.state;
+        const {skySelected, baseSelected, wingSelected, coachSelected} = this.state;
 
         if (!!this.state.loading) {
             return (
