@@ -14,7 +14,7 @@
     "expo-facebook": "^6.0.0",
     "firebase": "^5.5.7",
     "formik": "^1.3.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "moment": "^2.22.2",
     "moment-range": "^4.0.1",
     "native-base": "^2.13.4",
