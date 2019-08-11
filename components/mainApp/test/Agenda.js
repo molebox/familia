@@ -166,7 +166,7 @@ export default class AgendaScreen extends Component {
         rowHasChanged={this.rowHasChanged.bind(this)}
         renderKnob={this.renderKnob.bind(this)}
         theme={{
-            backgroundColor: '#15000f',
+            backgroundColor: '#ffc300',
             calendarBackground: '#15000f',
             textSectionTitleColor: '#ff5733',
             monthTextColor: '#ff5733',

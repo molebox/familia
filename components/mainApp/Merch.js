@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Linking, TouchableOpacity, Image} from 'react-native';
-import { Container, Content, Card, CardItem, Text} from 'native-base';
-import ColourBars from './colourBars/ColourBars';
+import { Container, Content, Text} from 'native-base';
 
 class Merch extends React.Component {
 
@@ -14,7 +13,7 @@ class Merch extends React.Component {
                         <Text style={styles.textStyle}>FAMILIA STORE</Text>
                     </View>
                         <TouchableOpacity onPress={() => Linking.openURL('https://google.com')}>
-                            <Image style={{height: 450, width: 340}} source={require('../assets/StoreLink.png')}>
+                            <Image style={{height: 450, width: 340}} source={require('../../assets/StoreLink.png')}>
                             </Image>
                         </TouchableOpacity>
                 </Content>

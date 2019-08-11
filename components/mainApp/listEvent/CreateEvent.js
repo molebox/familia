@@ -4,7 +4,7 @@ import {Formik} from 'formik';
 import Button from '../utilities/Button';
 import {Spinner} from 'native-base';
 import moment from 'moment';
-import {f, database, auth} from '../../config/config';
+import {f, database} from '../../../config/config';
 import Modal from "react-native-modal";
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import IconButton from '../utilities/IconButton';
@@ -86,13 +86,13 @@ export default class CreateEvent extends React.Component {
         }
 
         // PUSH DATA TO DATBASE...
-        const newPostKey = f.database().ref().child('tempEvents').push().key;
-        //Set user photos object
+        const newPostKey = f.database().ref().child('events').push().key;
+        //Set user events object
         const userId = f.auth().currentUser.uid;
         database.ref("/users/" + userId + "/usersEvents/" + newPostKey).set(values);
   
         const updates = {};
-        updates['/tempEvents/' + newPostKey] = values;
+        updates['/events/' + newPostKey] = values;
 
         return f.database().ref().update(updates);
     }
