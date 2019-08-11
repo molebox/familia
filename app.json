@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "FAMILIA",
-    "description": "Admin section accessed when logging in with familia email and password. Can accept events, cant delete Fixed not showing events from before this month. Working on filter.",
+    "name": "FAMILIA 0.0.1",
+    "description": "Filter of date and event type",
     "slug": "familia",
     "privacy": "public",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "34.0.0",
     "facebookAppId": "315884342379807",
     "facebookDisplayName": "Familia",
     "platforms": [

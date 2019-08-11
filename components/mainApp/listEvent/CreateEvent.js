@@ -86,13 +86,13 @@ export default class CreateEvent extends React.Component {
         }
 
         // PUSH DATA TO DATBASE...
-        const newPostKey = f.database().ref().child('tempEvents').push().key;
+        const newPostKey = f.database().ref().child('events').push().key;
         //Set user events object
         const userId = f.auth().currentUser.uid;
         database.ref("/users/" + userId + "/usersEvents/" + newPostKey).set(values);
   
         const updates = {};
-        updates['/tempEvents/' + newPostKey] = values;
+        updates['/events/' + newPostKey] = values;
 
         return f.database().ref().update(updates);
     }
