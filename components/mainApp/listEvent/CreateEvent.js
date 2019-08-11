@@ -12,6 +12,11 @@ import ErrorsAndWarnings from '../utilities/ErrorsAndWarnings';
 
 import * as yup from 'yup';
 
+let today = moment();
+let now = today.format("YYYY-MM-DD");
+let currentYear = today.year();
+const oneYearFromNow = today.add(1, 'years').calendar();
+
 const validationSchema = yup.object().shape({
     eventTitle: yup.string().required('Event title is required'),
     email: yup.string().email('Invalid email').required('Email is required'),
@@ -19,7 +24,7 @@ const validationSchema = yup.object().shape({
     description: yup.string().required('Description is required'),
     organiser: yup.string().required('Organiser is required'),
     link: yup.string().url('Invalid url'),
-    // date: yup.date().required('A date is required')
+    date: yup.date().min(new Date()).max(new Date(oneYearFromNow), 'The date must be within a year').required('A date is required')
 })
 
 const initialValues = {
@@ -32,8 +37,6 @@ const initialValues = {
     location: '',
     link: ''
 }
-let today = moment();
-let now = today.format("YYYY-MM-DD");
 
 export default class CreateEvent extends React.Component {
 
@@ -184,6 +187,7 @@ export default class CreateEvent extends React.Component {
                     onConfirm={this._handleDatePicked}
                     onCancel={this._hideDateTimePicker}
                     minimumDate={new Date()}
+                    maximumDate={new Date(oneYearFromNow)}
                     onDateChange={date => setFieldValue('date', date)}
                     />
                     {!!errors.date && !!touched.date ? <View style={styles.error}><ErrorsAndWarnings error={errors.date}/></View> : null}

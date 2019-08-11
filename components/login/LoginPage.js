@@ -40,7 +40,7 @@ class LoginPage extends React.Component {
             // Logged in
             that.setState({loggedIn: true, user});
             this.checkUserIsAdmin();
-            console.log('USER DETAILS: ', user);
+            // console.log('USER DETAILS: ', user);
         } else {
             // Logged out
             that.setState({loggedIn: false});

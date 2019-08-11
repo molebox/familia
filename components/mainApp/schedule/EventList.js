@@ -24,6 +24,17 @@ import { database } from '../../../config/config';
 let today = moment();
 let now = today.format("YYYY-MM-DD");
 let getCurrentMonth = today.month('MMM');
+let currentYear = today.year();
+let oneYearFromNow = today.add(1, 'years').calendar();
+
+const yearOrder =[
+    '2019',
+    '2020',
+    '2021',
+    '2022',
+    '2023',
+    '2024',
+]
 
 const monthOrder = [
     'JAN',
@@ -148,6 +159,12 @@ export default class EventList extends React.Component {
         return month.toUpperCase();
     }
 
+    formatDateToYear(date) {
+        let fullDate = moment(date);
+        fullDate.year();     
+        return fullDate.format('YYYY');   
+    }
+
     setSkydivingState = () => this.setState({ skySelected: !this.state.skySelected, filterCollapsed: false, filterApplied: true});
 
     setBaseState = () => this.setState({ baseSelected: !this.state.baseSelected, filterCollapsed: false, filterApplied: true});
@@ -173,6 +190,7 @@ export default class EventList extends React.Component {
                 const eventObj = data[event]; 
 
                     const month = this.formatDateToMonth(eventObj.date);   
+                    const year = this.formatDateToYear(eventObj.date);
                     let title;   
 
                     getCurrentMonth.month();
@@ -180,6 +198,8 @@ export default class EventList extends React.Component {
 
                     if (month === currentMonth.toUpperCase()) {
                         title = 'THIS MONTH';  
+                    } else if (currentYear !== parseInt(year, 10)) {
+                        title = `${month} - ${year}`;
                     } else {
                         title = month;                         
                     }
@@ -231,13 +251,29 @@ export default class EventList extends React.Component {
                 }
             });
 
-            function sortByMonth(arr) {             
+            // function sortByYear(arr) {             
+            //     arr.sort(function(a, b) {
+            //         return yearOrder.indexOf(parseInt(a.date, 10))
+            //         - yearOrder.indexOf(parseInt(b.date, 10));
+            //         // return monthOrder.indexOf(a.title)
+            //         //      - monthOrder.indexOf(b.title);
+            //     });
+            //   };
+
+            // console.log('TESTING:::', currentYear);
+
+            function sortByMonth(arr) {         
                 arr.sort(function(a, b){
-                    return monthOrder.indexOf(a.title)
-                         - monthOrder.indexOf(b.title);
+                    return monthOrder.indexOf(parseInt(a.date, 10))
+                    - monthOrder.indexOf(parseInt(b.date, 10));
+                    // return monthOrder.indexOf(a.title)
+                    //      - monthOrder.indexOf(b.title);
                 });
               };
-              sortByMonth(listData);
+              
+              sortByMonth(listData.reverse());
+              // sortByYear(listData);
+              // console.log({listData});
               that.setState({loading: false, refreshing: false});
            
 
@@ -254,8 +290,6 @@ export default class EventList extends React.Component {
 
     filterSearch = async() => {
         const {skySelected, baseSelected, wingSelected, coachSelected, selectedDates} = this.state;
-
-        console.log('selectedDates: ', selectedDates);
         const selectedDiscipline = [];
 
         if (skySelected) {
@@ -294,8 +328,6 @@ export default class EventList extends React.Component {
                 const range = extendedMoment.range(selectedDates[0], selectedDates[1])
                 let title;   
 
-                console.log('event object: ', event);
-
                 getCurrentMonth.month();
                 const currentMonth = getCurrentMonth.format('MMM');
 
@@ -325,7 +357,6 @@ export default class EventList extends React.Component {
                                title
                                }    
                            );                   
-                    console.log('DISCIPLINE FILTER: ', eventObj);
                     
                 // if the selected dates are a match
                 } else if (!_.isEmpty(selectedDates) && eventsDate.within(range)) {
@@ -345,7 +376,6 @@ export default class EventList extends React.Component {
                            title
                            }    
                        );
-                       console.log('DATES FILTER: ', eventObj);  
                 }                 
             }
         }
