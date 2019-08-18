@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "pretty": "prettier --write \"components/**/*.js\""
   },
   "dependencies": {
     "@expo/vector-icons": "^10.0.4",
@@ -18,6 +19,7 @@
     "moment": "^2.22.2",
     "moment-range": "^4.0.1",
     "native-base": "^2.13.4",
+    "prettier": "^1.18.2",
     "react": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
     "react-native-calendars": "^1.21.0",
@@ -26,6 +28,7 @@
     "react-native-form-generator": "^0.9.9",
     "react-native-form-idable": "^2.6.2",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
+    "react-native-material-dropdown": "^0.11.1",
     "react-native-modal": "^7.0.2",
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-pages": "^0.7.0",

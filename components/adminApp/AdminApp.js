@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import { View, Text, StyleSheet } from 'react-native';
-import TopBarNav from 'top-bar-nav';
-import ColourBars from '../mainApp/colourBars/ColourBars';
-import AdminEventsList from './events/AdminEventsList';
+import React, { Component } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import TopBarNav from "top-bar-nav";
+import ColourBars from "../mainApp/colourBars/ColourBars";
+import AdminEventsList from "./events/AdminEventsList";
 
 const Scene = ({ index }) => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 17 }}>{index}</Text>
+  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Text style={{ fontSize: 17 }}>{index}</Text>
   </View>
 );
 
@@ -16,12 +16,9 @@ const ROUTES = {
 };
 
 // There are three types of labels (image, text, and element)
-const ROUTESTACK = [
-  { text: '', title: 'AdminEventsList' }
-];
+const ROUTESTACK = [{ text: "", title: "AdminEventsList" }];
 
 export default class AdminApp extends Component {
-
   constructor(props) {
     super(props);
   }
@@ -45,13 +42,13 @@ export default class AdminApp extends Component {
             inactiveOpacity={1}
             fadeLabels={true}
         /> */}
-            <View style={styles.adminApp}>
-                <AdminEventsList/>
-            </View>
-              <View style={styles.coloursContainer}>
-                  <ColourBars/>   
-              </View>
-    </View>
+        <View style={styles.adminApp}>
+          <AdminEventsList />
+        </View>
+        <View style={styles.coloursContainer}>
+          <ColourBars />
+        </View>
+      </View>
     );
   }
 }
@@ -59,30 +56,30 @@ export default class AdminApp extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#15000f',
+    backgroundColor: "#15000f"
   },
-    headerStyle: {
-      borderBottomWidth: 1,
-      borderColor: '#15000f',
-      backgroundColor: '#15000f'
+  headerStyle: {
+    borderBottomWidth: 1,
+    borderColor: "#15000f",
+    backgroundColor: "#15000f"
   },
-    textStyle: {
-        fontSize: 14,
-        fontWeight: '300',
-        fontFamily: 'YRThree_Light',
-        color: 'white'
-    },
-    underlineStyle: {
-        height: 3.6,
-        backgroundColor: '#ffc300',
-        width: 50
-    },
-    coloursContainer: {
-        alignContent: 'center',
-        alignItems: 'center',
-        height: 100
-    },
-    adminApp: {
-        height: '100%'
-    }
+  textStyle: {
+    fontSize: 14,
+    fontWeight: "300",
+    fontFamily: "YRThree_Light",
+    color: "white"
+  },
+  underlineStyle: {
+    height: 3.6,
+    backgroundColor: "#ffc300",
+    width: 50
+  },
+  coloursContainer: {
+    alignContent: "center",
+    alignItems: "center",
+    height: 100
+  },
+  adminApp: {
+    height: "100%"
+  }
 });
