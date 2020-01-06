@@ -4,8 +4,12 @@ import {
   StyleSheet,
   SectionList,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from "react-native";
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import { Text, Icon, Spinner } from "native-base";
 import Collapsible from "react-native-collapsible";
 import Modal from "react-native-modal";
@@ -132,13 +136,38 @@ export default class EventList extends React.Component {
       locations: [],
       eventLocations: undefined,
       selectedLocation: undefined,
-      locationRange: 0
+      locationRange: 0,
+      deviceLocation: null,
+      platformErrorMessage: null
     };
   }
 
   componentDidMount() {
     this.loadEvents();
   }
+
+  componentWillMount() {
+    if (Platform.OS === 'android' && !Constants.isDevice) {
+      this.setState({
+        platformErrorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+      });
+    } else {
+      this._getLocationAsync();
+    }
+  }
+
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        platformErrorMessage: 'Permission to access location was denied',
+      });
+    }
+
+    let deviceLocation = await Location.getCurrentPositionAsync({});
+    console.log(deviceLocation.coords.longitude, deviceLocation.coords.latitude);
+    this.setState({ deviceLocation });
+  };
 
   onRefresh = () => {
     this.setState({ refreshing: true });
@@ -205,6 +234,7 @@ export default class EventList extends React.Component {
         }
         const listData = that.state.listData;
         const eventLocations = [];
+        eventLocations.push({id: 'USER_LOCATION', value: 'Current Location'});
         const holding = [];
 
         for (var event in data) {
@@ -292,13 +322,19 @@ export default class EventList extends React.Component {
   getSelectedDates = (fromDate, toDate) =>
     this.setState({ selectedDates: [fromDate, toDate], filterApplied: true });
 
+    getLocationSelection = (value) => {
+      console.log({value});
+      this.setState({selectedLocation: value});
+    }
+
   filterSearch = async () => {
     const {
       skySelected,
       baseSelected,
       wingSelected,
       coachSelected,
-      selectedDates
+      selectedDates,
+      selectedLocation
     } = this.state;
     const selectedDiscipline = [];
 
@@ -453,7 +489,8 @@ export default class EventList extends React.Component {
       skySelected,
       baseSelected,
       wingSelected,
-      coachSelected
+      coachSelected,
+      platformErrorMessage
     } = this.state;
 
     if (!!this.state.loading) {
@@ -462,6 +499,11 @@ export default class EventList extends React.Component {
           <Spinner color="#81e6fc" />
         </View>
       );
+    }
+    if (platformErrorMessage) {
+      <View style={styles.error}>
+          <ErrorsAndWarnings error={platformErrorMessage} />
+      </View>
     }
 
     return (
@@ -493,17 +535,20 @@ export default class EventList extends React.Component {
                 </View> */}
 
                 <View style={filterStyles.location}>
-                  <Dropdown
-                    label="LOCATION"
-                    textColor="#81e6fc"
-                    baseColor="#ffc300"
-                    itemColor="white"
-                    selectedItemColor="#ffc300"
-                    containerStyle={filterStyles.locationContainer}
-                    pickerStyle={filterStyles.locationPickerStyle}
-                    data={this.state.eventLocations}
-                    // onChangeText={}
-                  />
+                  <View style={filterStyles.center}>
+                    <Dropdown
+                      label="LOCATION"
+                      textColor="#81e6fc"
+                      baseColor="#ffc300"
+                      itemColor="white"
+                      selectedItemColor="#ffc300"
+                      containerStyle={filterStyles.locationContainer}
+                      pickerStyle={filterStyles.locationPickerStyle}
+                      data={this.state.eventLocations}
+                      onChangeText={(value) => this.getLocationSelection(value)}
+                    />
+                  </View>
+                 
                   <View style={filterStyles.sliderContainer}>
                     <View style={filterStyles.center}>
                       <Text style={filterStyles.locationRadiusTextStyle}>
@@ -700,10 +745,12 @@ const filterStyles = StyleSheet.create({
     marginHorizontal: 10
   },
   locationContainer: {
-    backgroundColor: "#15000f"
+    backgroundColor: "#15000f",
+    width: 170
   },
   locationPickerStyle: {
     backgroundColor: "#15000f",
+    marginTop: 10,
     marginLeft: 10,
     marginRight: 10
   },
@@ -810,5 +857,9 @@ const styles = StyleSheet.create({
   spinner: {
     flex: 1,
     justifyContent: "center"
+  },
+  error: {
+    marginVertical: 3,
+    alignItems: "center"
   }
 });
